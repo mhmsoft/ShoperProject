@@ -35,7 +35,7 @@ namespace Shoper.Data.Repository
         {
             using (var context = new ShoperContext())
             {
-                var result = context.ProductImages;               
+                var result = context.ProductImages.ToList();               
                 return result;
             }
         }
@@ -53,7 +53,7 @@ namespace Shoper.Data.Repository
         {
             using (var context = new ShoperContext())
             {
-                var result = context.ProductImages.Where(predicate);
+                var result = context.ProductImages.Where(predicate).ToList();
                 return result;
             }
         }

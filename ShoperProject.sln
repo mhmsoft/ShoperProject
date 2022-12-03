@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shoper.Data", "Shoper.Data\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shoper.BusinessLogic", "Shoper.BusinessLogic\Shoper.BusinessLogic.csproj", "{A845B7D9-0F78-412C-A192-92AC3B8AD3F4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shoper.Management", "Shoper.Management\Shoper.Management.csproj", "{DF3F3198-916F-4D92-AC58-C72032CFBC9A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{A845B7D9-0F78-412C-A192-92AC3B8AD3F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A845B7D9-0F78-412C-A192-92AC3B8AD3F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A845B7D9-0F78-412C-A192-92AC3B8AD3F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF3F3198-916F-4D92-AC58-C72032CFBC9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF3F3198-916F-4D92-AC58-C72032CFBC9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF3F3198-916F-4D92-AC58-C72032CFBC9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF3F3198-916F-4D92-AC58-C72032CFBC9A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
