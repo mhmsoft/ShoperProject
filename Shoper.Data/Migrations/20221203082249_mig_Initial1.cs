@@ -17,7 +17,7 @@ namespace Shoper.Data.Migrations
                     CategoryId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CategoryName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CategoryImagePath = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    CategoryImagePath = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {

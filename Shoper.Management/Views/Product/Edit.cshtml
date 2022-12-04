@@ -1,0 +1,93 @@
+﻿@using Shoper.Entities
+@model Shoper.Management.Models.ViewModels.Product_Price_Img_VM
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h4>Ürün Düzenleme Formu</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <input type="hidden" asp-for="@Model.Product.ProductId" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="@Model.Product.ProductName" class="control-label"></label>
+                <input asp-for="@Model.Product.ProductName" class="form-control" />
+                <span asp-validation-for="@Model.Product.ProductName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="@Model.Product.ProductStock" class="control-label"></label>
+                <input asp-for="@Model.Product.ProductStock" class="form-control" />
+                <span asp-validation-for="@Model.Product.ProductStock" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="@Model.Product.Description" class="control-label"></label>
+                <input asp-for="@Model.Product.Description" class="form-control" />
+                <span asp-validation-for="@Model.Product.Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Kategori</label>
+                <select asp-for="@Model.Product.CategoryId" class="form-control">
+                    <option selected>Seçiniz</option>
+                    @foreach (var category in (IEnumerable<Category>)ViewData["categories"])
+                    {
+                        <option selected=@(category.CategoryId==Model.Product.CategoryId?"true":"false") value="@category.CategoryId">@category.CategoryName</option>
+                    }
+                </select>
+                <span asp-validation-for="@Model.Product.CategoryId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Para birimi</label>
+                <select name="UnitPrice" asp-items="Html.GetEnumSelectList<UnitPrice>()" class="form-control">
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Ürün Fiyat</label>
+                <input name="Price" id="Price" type="text" class="form-control" />
+            </div>
+            <div class="form-group">
+            <table class="table table-striped">
+                <tr>
+                    <td>Seç</td>
+                    <td>Fiyat</td>
+                </tr>
+                @foreach (var item in Model.Prices)
+                {
+                    <tr>
+                        <td><input type="radio" name="@item.isValidFlag" id="@item.isValidFlag" /></td>
+                        <td>@item.Price</td>
+                    </tr>
+                }
+            </table>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Ürüne ait resimler</label>
+                @foreach (var img in Model.Images)
+                {
+                   if(img!=null){
+                        <img src="data:image/jpeg;base64, + Convert.ToBase64String(@img.Image)" style="margin:5px;height:100px;width:120px;" />
+                   }
+                   else{
+                        <img src="~/images/no-image.png" style="margin:5px;height:100px;width:120px;" />
+                   }
+                  
+                }
+            </div>
+            <div class="form-group">
+                <label class="control-label">Resim</label>
+                <input type="file" multiple id="img" name="img" class="form-control" />
+
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Değiştir" class="btn btn-primary" />
+                <a class="btn btn-primary" asp-action="Index">Anasayfa</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+

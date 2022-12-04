@@ -1,0 +1,68 @@
+﻿@using Shoper.Entities
+@model Shoper.Entities.Product
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+
+<h4>Ürün Ekleme Formu</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">                
+                <input type="hidden" asp-for="ProductId" class="form-control" />                
+            </div>
+            <div class="form-group">
+                <label asp-for="ProductName" class="control-label"></label>
+                <input asp-for="ProductName" class="form-control" />
+                <span asp-validation-for="ProductName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ProductStock" class="control-label"></label>
+                <input asp-for="ProductStock" class="form-control" />
+                <span asp-validation-for="ProductStock" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Kategori</label>
+                <select asp-for="CategoryId" class="form-control">
+                    <option selected>Seçiniz</option>
+                    @foreach (var category in (IEnumerable<Category>)ViewData["categories"])
+                    {
+                        <option value="@category.CategoryId">@category.CategoryName</option>
+                    }
+                </select>
+                <span asp-validation-for="CategoryId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Para birimi</label>
+                <select name="UnitPrice" asp-items="Html.GetEnumSelectList<UnitPrice>()" class="form-control">
+                </select>
+            </div>
+            <div class ="form-group">
+                <label  class="control-label">Ürün Fiyat</label>
+                <input id="price" name="price" type="text" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">Resim</label>
+                <input type="file" multiple id="img" name="img" class="form-control" />
+                
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

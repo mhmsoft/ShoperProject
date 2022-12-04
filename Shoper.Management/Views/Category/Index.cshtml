@@ -4,12 +4,12 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h5>Kategoriler</h5>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a class="btn btn-success" asp-action="Create">Yeni Kategori</a>
 </p>
-<table class="table">
+<table class="table table-striped">
     <thead>
         <tr>
             <th>
@@ -26,7 +26,7 @@
     </thead>
     <tbody>
 @foreach (var item in Model) {
-        <tr>
+        <tr id="@item.CategoryId">
             <td>
                 @Html.DisplayFor(modelItem => item.CategoryId)
             </td>
@@ -34,14 +34,37 @@
                 @Html.DisplayFor(modelItem => item.CategoryName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.CategoryImagePath)
+               @if(!string.IsNullOrEmpty(item.CategoryImagePath)){
+                <img src="~/images/@item.CategoryImagePath" style="margin:5px;width:100px;height:80px;" />
+               }
+               else{
+                <img src="~/images/no-image.png" style="margin:5px;width:100px;height:80px;" />
+               }
+                
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                @Html.ActionLink("Düzenle", "Edit", new { id=item.CategoryId },new{@class="btn btn-warning"}) 
+                <a class="btn  btn-danger text-white" href="javascript:void(0);" data-id="@item.CategoryId" id="sil">Sil</a>
             </td>
         </tr>
 }
     </tbody>
 </table>
+<script type="text/javascript">
+    $(document).ready(function () {
+      
+        $("#sil").click(function () {
+            var catid = $(this).attr("data-id");
+            $.ajax({
+                url: "@Url.Action("Delete")",
+                data: { id: catid },
+                type: "POST",
+                success: function (data) {
+                    $("tr#"+catid).remove();
+                }
+            });
+
+        });
+
+    });
+</script>
