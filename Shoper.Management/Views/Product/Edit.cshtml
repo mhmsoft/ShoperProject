@@ -8,7 +8,7 @@
 <h4>Ürün Düzenleme Formu</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
@@ -24,20 +24,19 @@
                 <input asp-for="@Model.Product.ProductStock" class="form-control" />
                 <span asp-validation-for="@Model.Product.ProductStock" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div  class="form-group">
                 <label asp-for="@Model.Product.Description" class="control-label"></label>
-                <input asp-for="@Model.Product.Description" class="form-control" />
+                <textarea id="Description" asp-for="@Model.Product.Description" class="form-control">
+
+                </textarea>
                 <span asp-validation-for="@Model.Product.Description" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label class="control-label">Kategori</label>
-                <select asp-for="@Model.Product.CategoryId" class="form-control">
-                    <option selected>Seçiniz</option>
-                    @foreach (var category in (IEnumerable<Category>)ViewData["categories"])
-                    {
-                        <option selected=@(category.CategoryId==Model.Product.CategoryId?"true":"false") value="@category.CategoryId">@category.CategoryName</option>
-                    }
-                </select>
+                @Html.DropDownListFor(model => model.Product.CategoryId, 
+                    new SelectList(ViewBag.Categories, "Value", "Text"), 
+                    htmlAttributes: new { @class = "form-control" })
+               
                 <span asp-validation-for="@Model.Product.CategoryId" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -47,35 +46,28 @@
             </div>
             <div class="form-group">
                 <label class="control-label">Ürün Fiyat</label>
-                <input name="Price" id="Price" type="text" class="form-control" />
+                <input type="hidden" asp-for="@Model.Price.PriceId"  class="form-control" />
+                <input asp-for="@Model.Price.Price" type="text" class="form-control" />
             </div>
-            <div class="form-group">
-            <table class="table table-striped">
-                <tr>
-                    <td>Seç</td>
-                    <td>Fiyat</td>
-                </tr>
-                @foreach (var item in Model.Prices)
-                {
-                    <tr>
-                        <td><input type="radio" name="@item.isValidFlag" id="@item.isValidFlag" /></td>
-                        <td>@item.Price</td>
-                    </tr>
-                }
-            </table>
-            </div>
+            
             <div class="form-group">
                 <label class="control-label">Ürüne ait resimler</label>
+                <div class="form-group">
                 @foreach (var img in Model.Images)
                 {
-                   if(img!=null){
-                        <img src="data:image/jpeg;base64,  Convert.ToBase64String(@img.Image)" style="margin:5px;height:100px;width:120px;" />
+                <div id="@img.ImageId" style="display:inline-block;">
+                   @if(img!=null){
+                        <img src="data:image/png;base64,@Convert.ToBase64String(img.Image)" style="margin:5px;height:100px;width:120px;" />
                    }
                    else{
                         <img src="~/images/no-image.png" style="margin:5px;height:100px;width:120px;" />
                    }
-                  
+                   <div>
+                     <button id="sil" data-id="@img.ImageId" class="btn btn-danger">Sil</button>
+                   </div>
+               </div>
                 }
+                </div>
             </div>
             <div class="form-group">
                 <label class="control-label">Resim</label>
@@ -89,5 +81,24 @@
         </form>
     </div>
 </div>
+<script src="~/ckeditor/ckeditor.js"></script>
 
+<script type="text/javascript">
+    $(document).on('click', '#sil', function () {     
+       
+            var imageId = $(this).attr("data-id");
+            $.ajax({
+                url: "@Url.Action("ImageDelete")",
+                data: { imageId: imageId },
+                type: "POST",
+                success: function (data) {
+                    $("div#" + imageId).remove(); // ilgili div(resim ve button) sil
+                }
+            });
+    });
+
+</script>
+<<script type="text/javascript">
+     CKEDITOR.replace('Description');
+</script>
 

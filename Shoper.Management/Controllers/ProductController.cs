@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Shoper.BusinessLogic.Interface;
 using Shoper.Entities;
 using Shoper.Management.Models.ViewModels;
@@ -55,7 +56,7 @@ namespace Shoper.Management.Controllers
                 }
                 ProductPrice priceModel = new ProductPrice()
                 {
-                    isValidFlag = false,
+                    isValidFlag = true,
                     Price = price,
                     UnitPrice = UnitPrice,
                     ProductId = InsertedModel.ProductId
@@ -71,9 +72,10 @@ namespace Shoper.Management.Controllers
         {
             Product_Price_Img_VM model = new Product_Price_Img_VM();
             model.Product=_productService.Get(id);
-            model.Prices = _productPriceService.GetExp(x => x.ProductId == id).ToList();
+            model.Price = _productPriceService.GetExp(x => x.ProductId == id).FirstOrDefault(x=>x.isValidFlag==true);
             model.Images = _productImageService.GetExp(x => x.ProductId == id).ToList();
-            ViewData["categories"] = _categoryService.GetAll();
+            
+            ViewBag.Categories =  new SelectList(_categoryService.GetAll(),"CategoryId","CategoryName", model.Product.CategoryId);
             return View(model);
         }
         [HttpPost]
@@ -97,10 +99,14 @@ namespace Shoper.Management.Controllers
                         _productImageService.Add(imageModel);
                     }
                 }
+
+               // model.Price.isValidFlag = true;
+                //model.Price.ProductId = UpdatedModel.ProductId;
                 ProductPrice priceModel = new ProductPrice()
                 {
-                    isValidFlag = model.Prices.FirstOrDefault().isValidFlag?true:false,
-                    Price = price,
+                    PriceId=model.Price.PriceId,
+                    isValidFlag = true,
+                    Price = model.Price.Price,
                     UnitPrice = UnitPrice,
                     ProductId = UpdatedModel.ProductId
                 };
@@ -110,6 +116,51 @@ namespace Shoper.Management.Controllers
             else
                 return View(model);
 
+        }
+        public IActionResult PriceHistory(int id)
+        {
+            return View(_productPriceService.GetExp(x=>x.ProductId==id));
+        }
+        
+        public IActionResult CreateNewPrice(int productId)
+        {
+            ProductPrice model = new ProductPrice();
+            model.ProductId = productId;  // beelli olan bir ürüne yeni fiyat ekleme formu
+            return View(model);
+        }
+        [HttpPost]
+        public IActionResult CreateNewPrice(ProductPrice model)
+        {
+            if (model != null)
+            {
+                model.isValidFlag = false;
+                _productPriceService.Add(model);
+                return RedirectToAction("PriceHistory", new {id=model.ProductId});
+            }
+            return View(model);
+           
+        }
+        public bool ImageDelete(int imageId)
+        {
+            var result= _productImageService.Delete(_productImageService.Get(imageId));
+            return result != null;
+        }
+        public bool SetValidFlag(int priceId)
+        {
+            ProductPrice priceModel = _productPriceService.Get(priceId);
+
+            if (priceModel != null)
+            {
+                foreach (var item in _productPriceService.GetExp(x=>x.ProductId==priceModel.ProductId))
+                {
+                    item.isValidFlag = false;
+                    _productPriceService.Update(item);
+                }
+                priceModel.isValidFlag = true;
+                _productPriceService.Update(priceModel);
+                return true;
+            }
+            return false;
         }
     }
 }

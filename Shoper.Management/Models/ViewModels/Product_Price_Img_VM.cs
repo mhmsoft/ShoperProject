@@ -6,6 +6,6 @@ namespace Shoper.Management.Models.ViewModels
     {
         public Product Product { get; set; }
         public ICollection<ProductImage> Images { get; set; }
-        public ICollection<ProductPrice> Prices { get; set; }
+        public ProductPrice Price { get; set; }
     }
 }

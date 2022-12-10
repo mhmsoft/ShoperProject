@@ -1,0 +1,80 @@
+﻿@model IEnumerable<Shoper.Entities.ProductPrice>
+
+@{
+    ViewData["Title"] = "PriceHistory";
+}
+
+<h4>Ürün Fiyat Bilgisi</h4>
+
+<p>
+    <a asp-action="CreateNewPrice" asp-route-productId="@Model.FirstOrDefault().ProductId">Yeni Fiyat</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.PriceId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UnitPrice)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.isValidFlag)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr id="@item.PriceId" class="@(item.isValidFlag==true?"table-active":"")">
+            <td>
+                @Html.DisplayFor(modelItem => item.PriceId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UnitPrice)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.isValidFlag)
+            </td>
+            <td>
+               <button id="SetActiveFlag" itemid="@item.PriceId" class="@(item.isValidFlag==true?"btn btn-success":"btn btn-warning")">Aktif fiyat yap</button>
+                
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+<script type="text/javascript">
+    $(document).on('click', '#SetActiveFlag', function () {
+
+        var priceId = $(this).attr("itemid");
+        $.ajax({
+            url: "@Url.Action("SetValidFlag")",
+            data: { priceId: priceId },
+            type: "POST",
+            success: function (data) {
+                if(data){
+                    $("tr.table-active").removeClass("table-active");// aktif classı kaldıracak
+                    $("tr").find('button').addClass('btn btn-warning');
+                    $(this).addClass("btn btn-success");// hangi butona tıklanmışsa aktif class
+                    $("tr#" + priceId).addClass("table-active");
+                    location.reload();
+                }
+               
+            }
+        });
+    });
+
+</script>
