@@ -5,66 +5,61 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Shoper.Data.Repository
 {
-    public class ProductRepository : IProductRepository
+    public class AddressRepository : IAddressRepository
     {
-        public Product Add(Product entity)
+        public Address Add(Address entity)
         {
             using (var context = new ShoperContext())
             {
-                var result = context.Products.Add(entity);
+                var result = context.Addresses.Add(entity);
                 context.SaveChanges();
                 return result.Entity;
             }
         }
-
-        public Product Delete(Product entity)
+        public Address Delete(Address entity)
         {
             using (var context = new ShoperContext())
             {
-                var result = context.Products.Remove(entity);
+                var result = context.Addresses.Remove(entity);
                 context.SaveChanges();
                 return result.Entity;
             }
         }
-
-        public IEnumerable<Product> GetAll()
+        public IEnumerable<Address> GetAll()
         {
             using (var context = new ShoperContext())
             {
-                var result = context.Products.Include(p=>p.ProductCategory).ToList();                
+                var result = context.Addresses.ToList();
                 return result;
             }
         }
 
-        public Product GetbyId(int id)
+        public Address GetbyId(int id)
         {
             using (var context = new ShoperContext())
             {
-                var result = context.Products.Include("ProductCategory").FirstOrDefault(x=>x.ProductId==id);               
+                var result = context.Addresses.Find(id);
                 return result;
             }
         }
-
-        public IEnumerable<Product> GetExp(Expression<Func<Product, bool>> predicate)
+        public IEnumerable<Address> GetExp(Expression<Func<Address, bool>> predicate)
         {
             using (var context = new ShoperContext())
             {
-                var result = context.Products.Include(x=>x.ProductCategory).Where(predicate).ToList();                
+                var result = context.Addresses.Where(predicate).ToList();
                 return result;
             }
         }
-
-        public Product Update(Product entity)
+        public Address Update(Address entity)
         {
             using (var context = new ShoperContext())
             {
-                var result = context.Products.Update(entity);
+                var result = context.Addresses.Update(entity);
                 context.SaveChanges();
                 return result.Entity;
             }

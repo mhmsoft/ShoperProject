@@ -14,6 +14,8 @@ namespace Shoper.Data
         public DbSet<ProductImage> ProductImages { get; set; }
         public DbSet<ProductPrice> ProductPrices { get; set; }
         public DbSet<ProductDiscount> ProductDiscounts { get; set; }
+        public DbSet<Address> Addresses { get; set; }
+        public DbSet<Customer> Customers { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -27,6 +29,8 @@ namespace Shoper.Data
             modelBuilder.Entity<ProductPrice>().ToTable("ProductPrice").HasKey(pp=>pp.PriceId);
             modelBuilder.Entity<ProductImage>().ToTable("ProductImage").HasKey(pi => pi.ImageId);
             modelBuilder.Entity<ProductDiscount>().ToTable("ProductDiscount").HasKey(d=>d.ProductDiscountId);
+            modelBuilder.Entity<Address>().ToTable("Address").HasKey(a=>a.AddressId);
+            modelBuilder.Entity<Customer>().ToTable("Customer").HasKey(a => a.CustomerId);
             // Relations
             //category-product
             modelBuilder.Entity<Category>()
@@ -53,6 +57,12 @@ namespace Shoper.Data
                .WithMany(d => d.ProductDiscount)
                .HasForeignKey(pp => pp.ProductId)
                .HasConstraintName("Fk_ProductDiscountToProduct");
+            //Customer-Address
+            modelBuilder.Entity<Address>()
+              .HasOne<Customer>(pp => pp.Customer)
+              .WithMany(d => d.Addresses)
+              .HasForeignKey(pp => pp.CustomerId)
+              .HasConstraintName("Fk_CustomerToAddress");
         }
     }
 }

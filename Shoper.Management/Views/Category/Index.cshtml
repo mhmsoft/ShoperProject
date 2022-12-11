@@ -51,9 +51,7 @@
     </tbody>
 </table>
 <script type="text/javascript">
-    $(document).ready(function () {
-      
-        $("#sil").click(function () {
+    $(document).on('click','#sil',function () {
             var catid = $(this).attr("data-id");
             $.ajax({
                 url: "@Url.Action("Delete")",
@@ -62,9 +60,6 @@
                 success: function (data) {
                     $("tr#"+catid).remove();
                 }
-            });
-
         });
-
     });
 </script>

@@ -5,66 +5,64 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Shoper.Data.Repository
 {
-    public class ProductRepository : IProductRepository
+    public class CustomerRepository : ICustomerRepository
     {
-        public Product Add(Product entity)
+        public Customer Add(Customer entity)
         {
-            using (var context = new ShoperContext())
+            using (var context= new ShoperContext())
             {
-                var result = context.Products.Add(entity);
+                var result = context.Customers.Add(entity);
                 context.SaveChanges();
                 return result.Entity;
             }
         }
 
-        public Product Delete(Product entity)
+        public Customer Delete(Customer entity)
         {
             using (var context = new ShoperContext())
             {
-                var result = context.Products.Remove(entity);
+                var result = context.Customers.Remove(entity);
                 context.SaveChanges();
                 return result.Entity;
             }
         }
 
-        public IEnumerable<Product> GetAll()
+        public IEnumerable<Customer> GetAll()
         {
             using (var context = new ShoperContext())
             {
-                var result = context.Products.Include(p=>p.ProductCategory).ToList();                
+                var result = context.Customers.Include(x=>x.Addresses).ToList();                
                 return result;
             }
         }
 
-        public Product GetbyId(int id)
+        public Customer GetbyId(int id)
         {
             using (var context = new ShoperContext())
             {
-                var result = context.Products.Include("ProductCategory").FirstOrDefault(x=>x.ProductId==id);               
+                var result = context.Customers.Include(x => x.Addresses).FirstOrDefault(x=>x.CustomerId==id);
                 return result;
             }
         }
 
-        public IEnumerable<Product> GetExp(Expression<Func<Product, bool>> predicate)
+        public IEnumerable<Customer> GetExp(Expression<Func<Customer, bool>> predicate)
         {
             using (var context = new ShoperContext())
             {
-                var result = context.Products.Include(x=>x.ProductCategory).Where(predicate).ToList();                
+                var result = context.Customers.Include(x => x.Addresses).Where(predicate).ToList();
                 return result;
             }
         }
-
-        public Product Update(Product entity)
+        public Customer Update(Customer entity)
         {
             using (var context = new ShoperContext())
             {
-                var result = context.Products.Update(entity);
+                var result = context.Customers.Update(entity);
                 context.SaveChanges();
                 return result.Entity;
             }

@@ -1,0 +1,58 @@
+﻿@model Shoper.Entities.ProductDiscount
+
+@{
+    ViewData["Title"] = "EditDiscount";
+}
+
+<h4>İndirim Düzenle</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="EditDiscount">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                
+                <input type="hidden" asp-for="ProductDiscountId" class="form-control" />
+                <span asp-validation-for="ProductDiscountId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DiscountName" class="control-label"></label>
+                <input asp-for="DiscountName" class="form-control" />
+                <span asp-validation-for="DiscountName" class="text-danger"></span>
+            </div>
+            <div class="form-group">               
+                <input type="hidden" asp-for="ProductId" class="form-control" />
+                <span asp-validation-for="ProductId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DiscountRate" class="control-label"></label>
+                <input asp-for="DiscountRate" class="form-control" />
+                <span asp-validation-for="DiscountRate" class="text-danger"></span>
+            </div>
+           
+            <div class="form-group">
+                <label asp-for="Status" class="control-label"></label>                
+                @Html.CheckBoxFor(x=>x.Status)
+                 Aktif
+                <span asp-validation-for="Status" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StartDate" class="control-label"></label>
+                <input asp-for="StartDate" class="form-control" />
+                <span asp-validation-for="StartDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EndDate" class="control-label"></label>
+                <input asp-for="EndDate" class="form-control" />
+                <span asp-validation-for="EndDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Değiştir" class="btn btn-primary" />
+                <a asp-action="Discounts" asp-route-id="@Model.ProductId" class="btn btn-primary">Önceki Sayfa</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+

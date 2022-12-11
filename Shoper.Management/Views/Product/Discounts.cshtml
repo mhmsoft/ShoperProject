@@ -4,10 +4,10 @@
     ViewData["Title"] = "Discounts";
 }
 
-<h1>Discounts</h1>
+<h4>Ürün İndirimleri</h4>
 
 <p>
-    <a asp-action="CreateNewDiscount" class="btn btn-success">Yeni İndirim</a>
+    <a asp-action="CreateNewDiscount" asp-route-productId="@ViewBag.productId" class="btn btn-success">Yeni İndirim</a>
 </p>
 <table class="table table-bordered">
     <thead>
@@ -24,9 +24,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.DiscountRate)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DiscountCode)
-            </th>
+            
             <th>
                 @Html.DisplayNameFor(model => model.Status)
             </th>
@@ -54,9 +52,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.DiscountRate)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DiscountCode)
-            </td>
+           
             <td>
                 @Html.DisplayFor(modelItem => item.Status)
             </td>

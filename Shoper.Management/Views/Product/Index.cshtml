@@ -32,7 +32,7 @@
     </thead>
     <tbody>
 @foreach (var item in Model) {
-        <tr>
+        <tr id="@item.ProductId">
             <td>
                 @Html.DisplayFor(modelItem => item.ProductId)
             </td>
@@ -46,7 +46,7 @@
                 @Html.Raw(item.Description)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.CategoryId)
+                @Html.DisplayFor(modelItem => item.ProductCategory.CategoryName)
             </td>
             <td>
                 @Html.ActionLink("Fiyat Geçmişi", "PriceHistory", new { id=item.ProductId },new{@class="btn btn-success"})
@@ -58,3 +58,20 @@
 }
     </tbody>
 </table>
+<script type="text/javascript">
+    $(document).on('click', '#sil', function () {
+        var response=confirm('Bu ürün ve ona ait tüm bilgiler siliencektir.Emin misiniz?');
+        var id = $(this).attr("data-id");
+        if(response==true){
+            $.ajax({
+                url: "@Url.Action("Delete")",
+                data: { id: id },
+                type: "POST",
+                success: function (data) {
+                    $("tr#" + id).remove();
+                }
+            });
+        }
+        
+    });
+</script>

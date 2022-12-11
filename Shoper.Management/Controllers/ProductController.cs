@@ -57,6 +57,7 @@ namespace Shoper.Management.Controllers
                         _productImageService.Add(imageModel);
                     }
                 }
+                
                 ProductPrice priceModel = new ProductPrice()
                 {
                     isValidFlag = true,
@@ -120,6 +121,13 @@ namespace Shoper.Management.Controllers
                 return View(model);
 
         }
+        
+        public bool Delete(int id)
+        {
+            var model = _productService.Get(id);
+            return _productService.Delete(model) != null;
+        }
+        #region Price
         public IActionResult PriceHistory(int id)
         {
             return View(_productPriceService.GetExp(x=>x.ProductId==id));
@@ -165,15 +173,49 @@ namespace Shoper.Management.Controllers
             }
             return false;
         }
+        #endregion
+       
         #region discounts
         public IActionResult Discounts(int id)
         {
+            ViewBag.productId = id;
             return View(_productDiscountService.GetExp(d=>d.ProductId==id));
         }
         public bool DeleteDiscount(int id)
         {
             var result = _productDiscountService.Delete(_productDiscountService.Get(id));
             return result != null;
+        }
+        public IActionResult CreateNewDiscount(int productId)
+        {
+            ProductDiscount model = new ProductDiscount();
+            model.ProductId = productId;
+            return View(model);
+        }
+        [HttpPost]
+        public IActionResult CreateNewDiscount(ProductDiscount model)
+        {
+            if (model != null)
+            {
+                _productDiscountService.Add(model);
+                return RedirectToAction("Discounts", new {id=model.ProductId});
+            }
+            return View(model);
+        }
+        public IActionResult EditDiscount(int id)
+        {
+            var model=_productDiscountService.Get(id);
+            return model != null ? View(model) : NotFound();
+        }
+        [HttpPost]
+        public IActionResult EditDiscount(ProductDiscount model)
+        {
+            if (model!=null)
+            {
+               _productDiscountService.Update(model);
+               return RedirectToAction("Discounts", new { id = model.ProductId });
+            }
+            return View(model);
         }
         #endregion
     }
