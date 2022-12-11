@@ -165,9 +165,16 @@ namespace Shoper.Management.Controllers
             }
             return false;
         }
+        #region discounts
         public IActionResult Discounts(int id)
         {
             return View(_productDiscountService.GetExp(d=>d.ProductId==id));
         }
+        public bool DeleteDiscount(int id)
+        {
+            var result = _productDiscountService.Delete(_productDiscountService.Get(id));
+            return result != null;
+        }
+        #endregion
     }
 }

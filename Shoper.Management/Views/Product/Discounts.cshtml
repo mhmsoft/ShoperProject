@@ -7,9 +7,9 @@
 <h1>Discounts</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="CreateNewDiscount" class="btn btn-success">Yeni İndirim</a>
 </p>
-<table class="table">
+<table class="table table-bordered">
     <thead>
         <tr>
             <th>
@@ -41,7 +41,7 @@
     </thead>
     <tbody>
 @foreach (var item in Model) {
-        <tr>
+        <tr id="@item.ProductDiscountId" class="@(item.Status==true?"table-success":"table-warning")">
             <td>
                 @Html.DisplayFor(modelItem => item.ProductDiscountId)
             </td>
@@ -67,11 +67,26 @@
                 @Html.DisplayFor(modelItem => item.EndDate)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+               @Html.ActionLink("Düzenle", "EditDiscount", new {  id=item.ProductDiscountId },new{@class="btn btn-warning"}) |
+               <a id="sil" data-id="@item.ProductDiscountId" href="javascript:void(0);" class="btn btn-danger">Sil</a>
+              
             </td>
         </tr>
 }
     </tbody>
 </table>
+<script type="text/javascript">
+    $(document).on('click','#sil',function () {
+       
+            var discountId = $(this).attr("data-id");
+            $.ajax({
+                url: "@Url.Action("DeleteDiscount")",
+                data: { id: discountId },
+                type: "POST",
+                success: function (data) {
+                $("tr#" + discountId).remove();
+                }
+            });      
+
+    });
+</script>
