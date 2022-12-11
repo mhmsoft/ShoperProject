@@ -21,9 +21,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.ProductStock)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
+          
             <th>
                 @Html.DisplayNameFor(model => model.CategoryId)
             </th>
@@ -42,16 +40,16 @@
             <td>
                 @Html.DisplayFor(modelItem => item.ProductStock)
             </td>
-            <td>
-                @Html.Raw(item.Description)
-            </td>
+            
             <td>
                 @Html.DisplayFor(modelItem => item.ProductCategory.CategoryName)
             </td>
             <td>
                 @Html.ActionLink("Fiyat Geçmişi", "PriceHistory", new { id=item.ProductId },new{@class="btn btn-success"})
                 @Html.ActionLink("İndirimler", "Discounts", new { id=item.ProductId },new{@class="btn btn-primary"})
+                @Html.ActionLink("Yorumlar", "Comments", new { id=item.ProductId },new{@class="btn btn-secondary"})
                 @Html.ActionLink("Düzenle", "Edit", new { id=item.ProductId },new{@class="btn btn-warning"})
+                
                 <a class="btn btn-danger text-white" href="javascript:void(0);" data-id="@item.ProductId" id="sil">Sil</a>
             </td>
         </tr>

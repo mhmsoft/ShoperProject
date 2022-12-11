@@ -13,12 +13,14 @@ namespace Shoper.Management.Controllers
         private readonly IProductImageService _productImageService;
         private readonly IProductPriceService _productPriceService;
         private readonly IProductDiscountService _productDiscountService;
+        private readonly IProductCommentService _productCommentService;
         public ProductController(
             IProductService productService,
             ICategoryService categoryService,
             IProductImageService productImageService,
             IProductPriceService productPriceService,
-            IProductDiscountService productDiscountService
+            IProductDiscountService productDiscountService,
+            IProductCommentService productCommentService
             )
         {
             this._productService = productService;
@@ -26,6 +28,7 @@ namespace Shoper.Management.Controllers
             this._productImageService = productImageService;
             this._productPriceService = productPriceService;
             this._productDiscountService= productDiscountService;
+            this._productCommentService= productCommentService;
         }
         public IActionResult Index()
         {
@@ -127,6 +130,12 @@ namespace Shoper.Management.Controllers
             var model = _productService.Get(id);
             return _productService.Delete(model) != null;
         }
+        #region Comments
+        public IActionResult Comments(int id)
+        {
+            return View(_productCommentService.GetExp(x=>x.ProductId==id));
+        }
+        #endregion
         #region Price
         public IActionResult PriceHistory(int id)
         {

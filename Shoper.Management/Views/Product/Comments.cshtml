@@ -1,0 +1,71 @@
+﻿@model IEnumerable<Shoper.Entities.ProductComment>
+
+@{
+    ViewData["Title"] = "Comments";
+}
+
+<h1>Comments</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.CommentId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Comment)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CommentDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Writer)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.isVerified)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductId)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr id="@item.CommentId" class="@(item.isVerified==true?"bg-success":"bg-danger")">
+            <td>
+                @Html.DisplayFor(modelItem => item.CommentId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Comment)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CommentDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Writer)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.isVerified)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductId)
+            </td>
+            <td>
+                    @Html.ActionLink("Onay ver", "VerifyComment", new {  id=item.CommentId  },new{@id="Verify",@href="javascript:void(0);",@class="btn btn-success"}) |
+                    @Html.ActionLink("Onay verme","NotVerifyComment", new { id=item.CommentId },new{@id="NotVerify",@href="javascript:void(0);",@class="btn btn-danger"})
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+

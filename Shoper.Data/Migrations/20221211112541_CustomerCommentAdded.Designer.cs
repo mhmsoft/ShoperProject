@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Shoper.Data;
 
@@ -11,9 +12,11 @@ using Shoper.Data;
 namespace Shoper.Data.Migrations
 {
     [DbContext(typeof(ShoperContext))]
-    partial class ShoperContextModelSnapshot : ModelSnapshot
+    [Migration("20221211112541_CustomerCommentAdded")]
+    partial class CustomerCommentAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -160,9 +163,6 @@ namespace Shoper.Data.Migrations
 
                     b.Property<string>("Writer")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("isVerified")
-                        .HasColumnType("bit");
 
                     b.HasKey("CommentId");
 
