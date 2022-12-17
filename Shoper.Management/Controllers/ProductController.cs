@@ -135,6 +135,29 @@ namespace Shoper.Management.Controllers
         {
             return View(_productCommentService.GetExp(x=>x.ProductId==id));
         }
+
+        public bool VerifyComment(int commentId)
+        {
+            var Comment=_productCommentService.Get(commentId);
+            if(Comment!=null)
+            {
+                Comment.isVerified = true;
+                _productCommentService.Update(Comment);
+                return true;
+            }
+            return false;
+        }
+        public bool NotVerifyComment(int commentId)
+        {
+            var Comment = _productCommentService.Get(commentId);
+            if (Comment != null)
+            {
+                Comment.isVerified = false;
+                _productCommentService.Update(Comment);
+                return true;
+            }
+            return false;
+        }
         #endregion
         #region Price
         public IActionResult PriceHistory(int id)

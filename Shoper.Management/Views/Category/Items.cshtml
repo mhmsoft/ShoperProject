@@ -1,0 +1,60 @@
+﻿@model IEnumerable<Shoper.Entities.ProductItem>
+
+@{
+    ViewData["Title"] = "Items";
+}
+
+<h4>Özellikler</h4>
+
+<p>
+    <a  class="btn btn-success" asp-action="CreateItem" asp-route-id="@ViewBag.Id">Yeni Özellik</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ItemId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ItemName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Category.CategoryName)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr id="@item.ItemId">
+            <td>
+                @Html.DisplayFor(modelItem => item.ItemId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ItemName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Category.CategoryName)
+            </td>
+            <td>
+                @Html.ActionLink("Düzenle", "EditItem", new {  id=item.ItemId ,@class="btn  btn-warning"})               
+                <a class="btn  btn-danger text-white" href="javascript:void(0);" data-id="@item.ItemId" id="sil">Sil</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+<script type="text/javascript">
+    $(document).on('click', '#sil', function () {
+        var Itemid = $(this).attr("data-id");
+        $.ajax({
+            url: "@Url.Action("DeleteItem")",
+            data: { id: ItemId },
+            type: "POST",
+            success: function (data) {
+                $("tr#" + Itemid).remove();
+            }
+        });
+    });
+</script>
+

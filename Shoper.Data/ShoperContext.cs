@@ -15,8 +15,11 @@ namespace Shoper.Data
         public DbSet<ProductPrice> ProductPrices { get; set; }
         public DbSet<ProductDiscount> ProductDiscounts { get; set; }
         public DbSet<ProductComment> ProductComments { get; set; }
+        public DbSet<ProductItem> ProductItems { get; set; }
+        public DbSet<ProductItemValue> ProductItemValues { get; set; }
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Customer> Customers { get; set; }
+       
         
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -32,6 +35,8 @@ namespace Shoper.Data
             modelBuilder.Entity<ProductImage>().ToTable("ProductImage").HasKey(pi => pi.ImageId);
             modelBuilder.Entity<ProductDiscount>().ToTable("ProductDiscount").HasKey(d=>d.ProductDiscountId);
             modelBuilder.Entity<ProductComment>().ToTable("ProductComment").HasKey(d => d.CommentId);
+            modelBuilder.Entity<ProductItem>().ToTable("ProductItem").HasKey(d => d.ItemId);
+            modelBuilder.Entity<ProductItemValue>().ToTable("ProductItemValue").HasKey(d => d.ItemValueId);
             modelBuilder.Entity<Address>().ToTable("Address").HasKey(a=>a.AddressId);
             modelBuilder.Entity<Customer>().ToTable("Customer").HasKey(a => a.CustomerId);
             // Relations
@@ -66,6 +71,24 @@ namespace Shoper.Data
                .WithMany(d => d.ProductComment)
                .HasForeignKey(pp => pp.ProductId)
                .HasConstraintName("Fk_ProductCommentToProduct");
+            //category-productItem
+            modelBuilder.Entity<ProductItem>()
+               .HasOne<Category>(pp => pp.Category)
+               .WithMany(d => d.ProductItem)
+               .HasForeignKey(pp => pp.CategoryId)
+               .HasConstraintName("Fk_ProductItemToCategory");
+            //product-productItemValue            
+            modelBuilder.Entity<ProductItemValue>()
+               .HasOne<Product>(pp => pp.Product)
+               .WithMany(d => d.ProductItemValue)
+               .HasForeignKey(pp => pp.ProductId)
+               .HasConstraintName("Fk_ProductItemValueToProduct");
+            //productItemValue-productItem
+            modelBuilder.Entity<ProductItemValue>()
+               .HasOne(pp => pp.ProductItem)
+               .WithOne(d => d.ProductItemValue)
+               .HasForeignKey<ProductItemValue>(pp => pp.ItemId)
+               .HasConstraintName("Fk_ProductItemValueToProductItem");
             //Customer-Address
             modelBuilder.Entity<Address>()
               .HasOne<Customer>(pp => pp.Customer)

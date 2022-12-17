@@ -13,5 +13,6 @@ namespace Shoper.Entities
         [Display(Name = "Resim")]
         public string? CategoryImagePath { get; set; }
         public ICollection<Product> Products { get; set; }
+        public ICollection<ProductItem> ProductItem { get; set; }
     }
 }

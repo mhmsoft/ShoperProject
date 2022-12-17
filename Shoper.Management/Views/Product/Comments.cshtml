@@ -4,12 +4,10 @@
     ViewData["Title"] = "Comments";
 }
 
-<h1>Comments</h1>
+<h4>Yorumlar</h4>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
+
+<table class="table table-bordered">
     <thead>
         <tr>
             <th>
@@ -61,11 +59,49 @@
                 @Html.DisplayFor(modelItem => item.ProductId)
             </td>
             <td>
-                    @Html.ActionLink("Onay ver", "VerifyComment", new {  id=item.CommentId  },new{@id="Verify",@href="javascript:void(0);",@class="btn btn-success"}) |
-                    @Html.ActionLink("Onay verme","NotVerifyComment", new { id=item.CommentId },new{@id="NotVerify",@href="javascript:void(0);",@class="btn btn-danger"})
+                 <a href="javascript:void(0);" id="Verify" commentId="@item.CommentId" class="btn btn-success">Onayla</a>
+                 <a href="javascript:void(0);" id="NotVerify" commentId="@item.CommentId" class="btn btn-danger">Onay Verme</a>
+                   
             </td>
         </tr>
 }
     </tbody>
 </table>
+<script type="text/javascript">
+    $(document).on('click', '#Verify', function () {
+        var commentId = $(this).attr("commentId");
+        $.ajax({
+            url: "@Url.Action("VerifyComment")",
+            data: { commentId: commentId },
+            type: "POST",
+            success: function (data) {
+                if (data) {
+                   // $("tr.bg-danger").removeClass("bg-danger");// pasif classı kaldıracak
+                   // $("tr").find('a@Verify').addClass('btn btn-warning');
+                   //$(this).addClass("btn btn-success");// hangi butona tıklanmışsa aktif class
+                    $("tr#" + commentId).addClass("bg-success");
+                    location.reload();
+                }
+            }
+        });
+    });
+    $(document).on('click', '#NotVerify', function () {
+        var commentId = $(this).attr("commentId");
+        $.ajax({
+            url: "@Url.Action("NotVerifyComment")",
+            data: { commentId: commentId },
+            type: "POST",
+            success: function (data) {
+                if (data) {
+                    // $("tr.bg-danger").removeClass("bg-danger");// pasif classı kaldıracak
+                    // $("tr").find('a@Verify').addClass('btn btn-warning');
+                    //$(this).addClass("btn btn-success");// hangi butona tıklanmışsa aktif class
+                    $("tr#" + commentId).addClass("bg-danger");
+                    location.reload();
+                }
+            }
+        });
+    });
+
+</script>
 

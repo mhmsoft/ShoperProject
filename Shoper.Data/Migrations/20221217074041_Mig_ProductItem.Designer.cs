@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Shoper.Data;
 
@@ -11,9 +12,11 @@ using Shoper.Data;
 namespace Shoper.Data.Migrations
 {
     [DbContext(typeof(ShoperContext))]
-    partial class ShoperContextModelSnapshot : ModelSnapshot
+    [Migration("20221217074041_Mig_ProductItem")]
+    partial class MigProductItem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -235,46 +238,22 @@ namespace Shoper.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ItemId"));
 
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
-
                     b.Property<string>("ItemName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("ItemId");
-
-                    b.HasIndex("CategoryId");
-
-                    b.ToTable("ProductItem", (string)null);
-                });
-
-            modelBuilder.Entity("Shoper.Entities.ProductItemValue", b =>
-                {
-                    b.Property<int>("ItemValueId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ItemValueId"));
-
-                    b.Property<int>("ItemId")
-                        .HasColumnType("int");
+                    b.Property<string>("ItemValue")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ItemValueId");
-
-                    b.HasIndex("ItemId")
-                        .IsUnique();
+                    b.HasKey("ItemId");
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductItemValue", (string)null);
+                    b.ToTable("ProductItem", (string)null);
                 });
 
             modelBuilder.Entity("Shoper.Entities.ProductPrice", b =>
@@ -366,35 +345,14 @@ namespace Shoper.Data.Migrations
 
             modelBuilder.Entity("Shoper.Entities.ProductItem", b =>
                 {
-                    b.HasOne("Shoper.Entities.Category", "Category")
-                        .WithMany("ProductItem")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("Fk_ProductItemToCategory");
-
-                    b.Navigation("Category");
-                });
-
-            modelBuilder.Entity("Shoper.Entities.ProductItemValue", b =>
-                {
-                    b.HasOne("Shoper.Entities.ProductItem", "ProductItem")
-                        .WithOne("ProductItemValue")
-                        .HasForeignKey("Shoper.Entities.ProductItemValue", "ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("Fk_ProductItemValueToProductItem");
-
                     b.HasOne("Shoper.Entities.Product", "Product")
-                        .WithMany("ProductItemValue")
+                        .WithMany("ProductItem")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("Fk_ProductItemValueToProduct");
+                        .HasConstraintName("Fk_ProductItemToProduct");
 
                     b.Navigation("Product");
-
-                    b.Navigation("ProductItem");
                 });
 
             modelBuilder.Entity("Shoper.Entities.ProductPrice", b =>
@@ -411,8 +369,6 @@ namespace Shoper.Data.Migrations
 
             modelBuilder.Entity("Shoper.Entities.Category", b =>
                 {
-                    b.Navigation("ProductItem");
-
                     b.Navigation("Products");
                 });
 
@@ -429,15 +385,9 @@ namespace Shoper.Data.Migrations
 
                     b.Navigation("ProductImage");
 
-                    b.Navigation("ProductItemValue");
+                    b.Navigation("ProductItem");
 
                     b.Navigation("ProductPrice");
-                });
-
-            modelBuilder.Entity("Shoper.Entities.ProductItem", b =>
-                {
-                    b.Navigation("ProductItemValue")
-                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

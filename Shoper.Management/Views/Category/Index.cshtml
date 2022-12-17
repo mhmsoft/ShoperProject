@@ -43,6 +43,7 @@
                 
             </td>
             <td>
+                @Html.ActionLink("Özellikler", "Items", new { id=item.CategoryId },new{@class="btn btn-primary"})
                 @Html.ActionLink("Düzenle", "Edit", new { id=item.CategoryId },new{@class="btn btn-warning"}) 
                 <a class="btn  btn-danger text-white" href="javascript:void(0);" data-id="@item.CategoryId" id="sil">Sil</a>
             </td>

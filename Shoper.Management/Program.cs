@@ -14,8 +14,11 @@ builder.Services.AddScoped<IProductPriceRepository, ProductPriceRepository>();
 builder.Services.AddScoped<IProductImageRepository, ProductImageRepository>();
 builder.Services.AddScoped<IProductDiscountRepository, ProductDiscountRepository>();
 builder.Services.AddScoped<IProductCommentRepository, ProductCommentRepository>();
+builder.Services.AddScoped<IProductItemRepository, ProductItemRepository>();
+builder.Services.AddScoped<IProductItemValueRepository, ProductItemValueRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IAddressRepository, AddressRepository>();
+
 
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IProductService, ProductService>();
@@ -23,6 +26,8 @@ builder.Services.AddScoped<IProductPriceService, ProductPriceService>();
 builder.Services.AddScoped<IProductImageService, ProductImageService>();
 builder.Services.AddScoped<IProductDiscountService, ProductDiscountService>();
 builder.Services.AddScoped<IProductCommentService, ProductCommentService>();
+builder.Services.AddScoped<IProductItemService, ProductItemService>();
+builder.Services.AddScoped<IProductItemValueService, ProductItemValueService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IAddressService, AddressService>();
 
