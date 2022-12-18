@@ -45,6 +45,7 @@
                 @Html.DisplayFor(modelItem => item.ProductCategory.CategoryName)
             </td>
             <td>
+                @Html.ActionLink("Özellikler", "Items", new { id=item.ProductId },new{@class="btn btn-dark"})
                 @Html.ActionLink("Fiyat Geçmişi", "PriceHistory", new { id=item.ProductId },new{@class="btn btn-success"})
                 @Html.ActionLink("İndirimler", "Discounts", new { id=item.ProductId },new{@class="btn btn-primary"})
                 @Html.ActionLink("Yorumlar", "Comments", new { id=item.ProductId },new{@class="btn btn-secondary"})

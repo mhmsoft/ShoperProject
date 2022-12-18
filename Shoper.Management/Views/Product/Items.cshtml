@@ -1,0 +1,56 @@
+﻿@model IEnumerable<Shoper.Entities.ProductItemValue>
+
+@{
+    ViewData["Title"] = "Items";
+}
+
+<h4>Ürüne ait özellikler</h4>
+
+<p>
+    <a  class="btn btn-success" asp-action="ItemNewValue" asp-route-id="@ViewBag.Id">Yeni Özellik Ekle</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ItemValueId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductItem.ItemName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Value)
+            </th>
+       
+            <th>
+                @Html.DisplayNameFor(model => model.ProductId)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ItemValueId)
+            </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProductItem.ItemName)
+                </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Value)
+            </td>
+            
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductId)
+            </td>
+            <td>
+               @*@Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                  *@
+                </td>
+        </tr>
+}
+    </tbody>
+</table>

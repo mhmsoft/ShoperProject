@@ -36,9 +36,13 @@ namespace Shoper.Data
             modelBuilder.Entity<ProductDiscount>().ToTable("ProductDiscount").HasKey(d=>d.ProductDiscountId);
             modelBuilder.Entity<ProductComment>().ToTable("ProductComment").HasKey(d => d.CommentId);
             modelBuilder.Entity<ProductItem>().ToTable("ProductItem").HasKey(d => d.ItemId);
-            modelBuilder.Entity<ProductItemValue>().ToTable("ProductItemValue").HasKey(d => d.ItemValueId);
+            modelBuilder.Entity<ProductItemValue>().ToTable("ProductItemValue").HasKey(d => new { d.ItemValueId, d.ItemId });
             modelBuilder.Entity<Address>().ToTable("Address").HasKey(a=>a.AddressId);
             modelBuilder.Entity<Customer>().ToTable("Customer").HasKey(a => a.CustomerId);
+
+
+            modelBuilder.Entity<ProductItemValue>().Property(d => d.ItemValueId).UseIdentityColumn(1,1);
+
             // Relations
             //category-product
             modelBuilder.Entity<Category>()

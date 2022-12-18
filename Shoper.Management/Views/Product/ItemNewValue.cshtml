@@ -1,0 +1,34 @@
+﻿@using Shoper.BusinessLogic.Interface
+@model Shoper.Management.Models.ViewModels.VMItems
+@inject IProductItemValueService _valueService;
+@{
+    ViewData["Title"] = "ItemValues";
+}
+
+<h1>ItemValues</h1>
+
+<form asp-action="ItemNewValue">
+   <input type="hidden" id="productId" name="productId" value="@ViewBag.Id" />
+<table class="table">
+    <thead>
+        <tr>
+            <th>Item</th>
+            <th>Item Values</th>
+        </tr>
+    </thead>
+    <tbody>       
+                @foreach (var Item in Model.Items)
+                    {
+                <input type="hidden" id="itemId[]" name="itemId[]" value="@Item.ItemId" />
+                  <tr>
+                       <td>@Html.Label(@Item.ItemName)</td>
+                       <td><input type="text" id="value[]" name="value[]" value="" /></td>
+                   </tr>
+                    }
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+
+    </tbody>
+</table>
+</form>

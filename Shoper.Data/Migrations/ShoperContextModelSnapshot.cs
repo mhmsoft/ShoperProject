@@ -267,7 +267,7 @@ namespace Shoper.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("ItemValueId");
+                    b.HasKey("ItemValueId", "ItemId");
 
                     b.HasIndex("ItemId")
                         .IsUnique();

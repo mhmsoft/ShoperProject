@@ -14,13 +14,17 @@ namespace Shoper.Management.Controllers
         private readonly IProductPriceService _productPriceService;
         private readonly IProductDiscountService _productDiscountService;
         private readonly IProductCommentService _productCommentService;
+        private readonly IProductItemService _productItemService;
+        private readonly IProductItemValueService _productItemValueService;
         public ProductController(
             IProductService productService,
             ICategoryService categoryService,
             IProductImageService productImageService,
             IProductPriceService productPriceService,
             IProductDiscountService productDiscountService,
-            IProductCommentService productCommentService
+            IProductCommentService productCommentService,
+            IProductItemService productItemService,
+            IProductItemValueService productItemValueService
             )
         {
             this._productService = productService;
@@ -29,6 +33,8 @@ namespace Shoper.Management.Controllers
             this._productPriceService = productPriceService;
             this._productDiscountService= productDiscountService;
             this._productCommentService= productCommentService;
+            this._productItemService= productItemService;
+            this._productItemValueService = productItemValueService;
         }
         public IActionResult Index()
         {
@@ -130,6 +136,40 @@ namespace Shoper.Management.Controllers
             var model = _productService.Get(id);
             return _productService.Delete(model) != null;
         }
+        #region ItemValues
+        public IActionResult Items(int id)
+        {
+            ViewBag.Id = id;
+            return View(_productItemValueService.GetExp(p => p.ProductId == id));
+        }
+        public IActionResult ItemNewValue(int id)
+        {
+            int categoryId=_productService.Get(id).CategoryId;
+            VMItems ItemModel = new VMItems();
+            ItemModel.Items = _productItemService.GetExp(c => c.CategoryId == categoryId);
+            ItemModel.ItemValues = _productItemValueService.GetExp(p => p.ProductId == id);
+            ViewBag.Id = id;
+            return View(ItemModel);
+        }
+        [HttpPost]
+        public IActionResult ItemNewValue(int productId, int[] itemId, string[] value)
+        {
+            if(itemId!=null)
+            {
+                for(int i=0;i<itemId.Length;i++)
+                {
+                    _productItemValueService.Add(new ProductItemValue()
+                    {
+                        ItemId = itemId[i],
+                        ProductId=productId,
+                        Value=value[i]
+                    });
+                }
+                
+            }
+            return RedirectToAction("Items", new {id= productId });
+        }
+        #endregion
         #region Comments
         public IActionResult Comments(int id)
         {
@@ -159,6 +199,7 @@ namespace Shoper.Management.Controllers
             return false;
         }
         #endregion
+
         #region Price
         public IActionResult PriceHistory(int id)
         {
