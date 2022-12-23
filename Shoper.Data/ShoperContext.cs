@@ -1,9 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Shoper.Entities;
 
 namespace Shoper.Data
 {
-    public class ShoperContext : DbContext
+    public class AppUser : IdentityUser
+    {
+        public string fullName { get; set; }
+    }
+    public class ShoperContext : IdentityDbContext<AppUser>
     {
         public ShoperContext()
         {
@@ -24,10 +30,13 @@ namespace Shoper.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Server=DESKTOP-A6PJE9T\SQLEXPRESS;Database=ShoperDb;Trusted_Connection=True;TrustServerCertificate=True");
+            optionsBuilder.UseSqlServer(@"Server=DESKTOP-LRL95PE\SQLEXPRESS;Database=ShoperDb;Trusted_Connection=True;TrustServerCertificate=True");
+            
+            //optionsBuilder.UseSqlServer(@"Server=DESKTOP-A6PJE9T\SQLEXPRESS;Database=ShoperDb;Trusted_Connection=True;TrustServerCertificate=True");
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+           
             // Tablo ismi ve tabloya ait primary key verilir.
             modelBuilder.Entity<Category>().ToTable("Category").HasKey(c=>c.CategoryId);
             modelBuilder.Entity<Product>().ToTable("Product").HasKey(p=>p.ProductId);
@@ -92,13 +101,15 @@ namespace Shoper.Data
                .HasOne(pp => pp.ProductItem)
                .WithOne(d => d.ProductItemValue)
                .HasForeignKey<ProductItemValue>(pp => pp.ItemId)
-               .HasConstraintName("Fk_ProductItemValueToProductItem");
+               .HasConstraintName("Fk_ProductItemValueToProductItem").OnDelete(DeleteBehavior.NoAction);
             //Customer-Address
             modelBuilder.Entity<Address>()
               .HasOne<Customer>(pp => pp.Customer)
               .WithMany(d => d.Addresses)
               .HasForeignKey(pp => pp.CustomerId)
               .HasConstraintName("Fk_CustomerToAddress");
+
+            base.OnModelCreating(modelBuilder);
         }
     }
 }

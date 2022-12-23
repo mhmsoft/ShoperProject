@@ -1,10 +1,56 @@
+﻿using Microsoft.AspNetCore.Identity;
 using Shoper.BusinessLogic.Interface;
 using Shoper.BusinessLogic.Service;
 using Shoper.Data;
 using Shoper.Data.Interface;
 using Shoper.Data.Repository;
+using Shoper.Data.Validator;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
+    {
+        options.User.AllowedUserNameCharacters = "abcçdefgğhiıjklmnoöpqrsştuüvwxyzABCÇDEFGĞHIİJKLMNOÖPQRSŞTUÜVWXYZ0123456789-";
+        options.User.RequireUniqueEmail = true;
+
+        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+        options.Lockout.MaxFailedAccessAttempts = 5;
+
+        options.Password.RequireDigit = true;
+        options.Password.RequiredLength = 8;
+        options.Password.RequiredUniqueChars = 1;
+        options.Password.RequireLowercase = true;
+        options.Password.RequireUppercase = true;
+        options.Password.RequireNonAlphanumeric = true;
+    })
+
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<ShoperContext>()
+                .AddPasswordValidator<PasswordValidator>()
+                .AddUserValidator<UserValidator>()
+                .AddErrorDescriber<ErrorDescriber>()
+                .AddDefaultTokenProviders(); 
+               
+builder.Services.AddSession(options => {
+    options.IdleTimeout = TimeSpan.FromMinutes(1);//You can set Time   
+});
+builder.Services.ConfigureApplicationCookie(_ =>
+{
+    _.LoginPath = new PathString("/Account/Login");
+    _.LogoutPath = new PathString("/Account/SignOut");
+    _.Cookie = new CookieBuilder
+    {
+        Name = "ShoperCookie", //Oluþturulacak Cookie'yi isimlendiriyoruz.
+        HttpOnly = false, //Kötü niyetli insanlarýn client-side tarafýndan Cookie'ye eriþmesini engelliyoruz.
+                          //Expiration = TimeSpan.FromMinutes(2), //Oluþturulacak Cookie'nin vadesini belirliyoruz.
+        SameSite = SameSiteMode.Lax, //Top level navigasyonlara sebep olmayan requestlere Cookie'nin gönderilmemesini belirtiyoruz.
+        SecurePolicy = CookieSecurePolicy.Always //HTTPS üzerinden eriþilebilir yapýyoruz.
+    };
+    _.SlidingExpiration = true; //Expiration süresinin yarýsý kadar süre zarfýnda istekte bulunulursa eðer geri kalan yarýsýný tekrar sýfýrlayarak ilk ayarlanan süreyi tazeleyecektir.
+    _.ExpireTimeSpan = TimeSpan.FromMinutes(10); //CookieBuilder nesnesinde tanýmlanan Expiration deðerinin varsayýlan deðerlerle ezilme ihtimaline karþýn tekrardan Cookie vadesi burada da belirtiliyor.
+    _.AccessDeniedPath = new PathString("/Account/AccessDenied");
+});
+
+builder.Services.AddAuthentication();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -49,7 +95,7 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
-
+app.UseAuthentication();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
