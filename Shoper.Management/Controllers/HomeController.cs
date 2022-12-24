@@ -143,7 +143,12 @@ namespace Shoper.Management.Controllers
                 {
                     return RedirectToAction("Login");
                 }
+                ModelState.AddModelError(string.Empty, "Kullanıcı doğrulaması yapılamadı.");
+                return View();
             }
+            ModelState.AddModelError(string.Empty, "Kullanıcı bulunamadı.");
+            return View();
+
 
         }
         public async Task Logout()
