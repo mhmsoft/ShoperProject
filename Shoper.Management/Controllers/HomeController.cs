@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Shoper.BusinessLogic.Utility;
 using Shoper.Data;
 using Shoper.Management.Models;
 using Shoper.Management.Models.ViewModels;
@@ -13,16 +14,20 @@ namespace Shoper.Management.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
+        private readonly IMailSender _mailSender;
 
         public HomeController(ILogger<HomeController> logger, 
                                     UserManager<AppUser> userManager,
-                                    SignInManager<AppUser> signInManager)
+                                    SignInManager<AppUser> signInManager,
+                                    IMailSender mailSender)
         {
             _logger = logger;
             _userManager = userManager;
             _signInManager = signInManager;
+            _mailSender = mailSender;
         }
 
+        [Authorize(Roles = "manager")]
         public IActionResult Index()
         {
             return View();
@@ -38,6 +43,8 @@ namespace Shoper.Management.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+        #region Auth
+        
         public IActionResult Register()
         {
             return View();
@@ -46,45 +53,56 @@ namespace Shoper.Management.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(registerViewModel model, string ReturnUrl = null)
         {
-            if (ModelState.IsValid)
-            {
-                ReturnUrl = ReturnUrl ?? Url.Content("~/");
+            
+                ReturnUrl = ReturnUrl ?? Url.Content("~/Home/Index");
                 var user = new AppUser()
                 {
+                    fullName = model.Name + " " + model.LastName,
                     Email = model.Email,
-                    UserName = model.Email
+                    UserName = model.Email,
+                    PhoneNumber=model.Phone  
                 };
 
                 var result = await _userManager.CreateAsync(user, model.Password);
 
-                var roleResult = await _userManager.AddToRoleAsync(user, "Manager");
+                var roleResult = await _userManager.AddToRoleAsync(user, "manager");
 
                 if (result.Succeeded)
                 {
-                    await _signInManager.SignInAsync(user, isPersistent: false);
+                   
 
-                    //var confirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    //var confirmationLink = Url.Action("ConfirmEmail", "Home", new
-                    //{
-                    //    userId = user.Id,
-                    //    token = confirmationToken
-                    //}, HttpContext.Request.Scheme);
-
-                    //await _emailHelper.SendAsync(new()
-                    //{
-                    //    Subject = "Confirm e-mail",
-                    //    Body = $"Please <a href='{confirmationLink}'>click</a> to confirm your e-mail address.",
-                    //    To = user.Email
-                    //});
-                    if (Url.IsLocalUrl(ReturnUrl))
+                    var confirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var confirmationLink = Url.Action("ConfirmEmail", "Home", new
                     {
-                        return Redirect(ReturnUrl);
-                    }
-                    return RedirectToAction("index", "Home");
+                        userId = user.Id,
+                        token = confirmationToken
+                    }, HttpContext.Request.Scheme);
+
+                await  _mailSender.MailSend(new Email()
+                {
+                    Subject = "Confirm e-mail",
+                    Body = $"Please <a href='{confirmationLink}'>click</a> to confirm your e-mail address.",
+                    To = user.Email
+                });
+
+                if (_userManager.Options.SignIn.RequireConfirmedAccount)
+                {
+
+                }
+                else {
+
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    return Redirect(ReturnUrl);
+                }
+
+                    
+                      
+                    
+                  
                 }
                 result.Errors.ToList().ForEach(f => ModelState.AddModelError(string.Empty, f.Description));
 
-            }
+           
             return View(model);
         }
         public IActionResult Login()
@@ -94,7 +112,7 @@ namespace Shoper.Management.Controllers
         [HttpPost]
         public  async Task<IActionResult> Login(loginViewModel model, string ReturnUrl = null)
         {
-            ReturnUrl = ReturnUrl ?? Url.Content("~/");
+            ReturnUrl = ReturnUrl ?? Url.Content("~/Home/Index");
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user != null)
             {
@@ -106,12 +124,9 @@ namespace Shoper.Management.Controllers
                 {
                     await _userManager.ResetAccessFailedCountAsync(user);
                     await _userManager.SetLockoutEndDateAsync(user, null);
-
-                    if (Url.IsLocalUrl(ReturnUrl))
-                    {
-                        return Redirect(ReturnUrl);
-                    }
-                    return RedirectToAction("Index", "Home");
+                    
+                        return LocalRedirect(ReturnUrl);                    
+                    
                    
                 }
                 else if (result.IsLockedOut)
@@ -133,6 +148,7 @@ namespace Shoper.Management.Controllers
             }
             return View(model);
         }
+       
         public async Task<IActionResult> ComfirmEmail(string userId, string token)
         {
             var user = await _userManager.FindByIdAsync(userId);
@@ -151,9 +167,11 @@ namespace Shoper.Management.Controllers
 
 
         }
-        public async Task Logout()
+        public async Task <IActionResult> LogOut()
         {
             await _signInManager.SignOutAsync();
+            //return RedirectToAction("Login");
+            return Redirect("Login");
         }
 
         [HttpGet]
@@ -164,7 +182,7 @@ namespace Shoper.Management.Controllers
             return RedirectToAction("Login", new { ReturnUrl = ReturnUrl });
 
         }
-
+        #endregion
 
     }
 }

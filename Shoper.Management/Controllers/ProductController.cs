@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Shoper.BusinessLogic.Interface;
 using Shoper.Entities;
 using Shoper.Management.Models.ViewModels;
+using System.Data;
 
 namespace Shoper.Management.Controllers
 {
+    [Authorize(Roles = "manager")]
     public class ProductController : Controller
     {
         private readonly IProductService _productService;

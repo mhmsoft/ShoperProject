@@ -15,7 +15,7 @@ namespace Shoper.Data.Validator
 
             if (user.UserName == password)
             {
-                errors.Add(new() { Code = "PasswordContainsUsername", Description = "Password can not contains user name." });
+                errors.Add(new() { Code = "PasswordContainsUsername", Description = "Kullanıcı ile parola aynı olamaz." });
             }
 
             if (errors.Any())

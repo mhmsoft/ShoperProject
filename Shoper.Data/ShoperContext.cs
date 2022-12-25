@@ -25,8 +25,10 @@ namespace Shoper.Data
         public DbSet<ProductItemValue> ProductItemValues { get; set; }
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Customer> Customers { get; set; }
-       
-        
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderDetail> OrderDetails { get; set; }
+
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -48,9 +50,12 @@ namespace Shoper.Data
             modelBuilder.Entity<ProductItemValue>().ToTable("ProductItemValue").HasKey(d => new { d.ItemValueId, d.ItemId });
             modelBuilder.Entity<Address>().ToTable("Address").HasKey(a=>a.AddressId);
             modelBuilder.Entity<Customer>().ToTable("Customer").HasKey(a => a.CustomerId);
+            modelBuilder.Entity<Order>().ToTable("Order").HasKey(a => a.OrderId);
+            modelBuilder.Entity<OrderDetail>().ToTable("OrderDetail").HasKey(a => a.OrderDetailId);
 
 
             modelBuilder.Entity<ProductItemValue>().Property(d => d.ItemValueId).UseIdentityColumn(1,1);
+            modelBuilder.Entity<Order>().Property(d => d.OrderId).UseIdentityColumn(100, 1);
 
             // Relations
             //category-product
@@ -108,8 +113,27 @@ namespace Shoper.Data
               .WithMany(d => d.Addresses)
               .HasForeignKey(pp => pp.CustomerId)
               .HasConstraintName("Fk_CustomerToAddress");
+            //Customer-Order
+            modelBuilder.Entity<Order>()
+              .HasOne<Customer>(pp => pp.Customer)
+              .WithMany(d => d.Orders)
+              .HasForeignKey(pp => pp.CustomerId)
+              .HasConstraintName("Fk_CustomerToOrder");
+            //OrderDetail-Order
+            modelBuilder.Entity<OrderDetail>()
+              .HasOne<Order>(pp => pp.Order)
+              .WithMany(d => d.OrderDetail)
+              .HasForeignKey(pp => pp.OrderId)
+              .HasConstraintName("Fk_OrderDetailToOrder");
 
-            base.OnModelCreating(modelBuilder);
+            //OrderDetail-Product
+            modelBuilder.Entity<OrderDetail>()
+              .HasOne<Product>(pp => pp.Product)
+              .WithMany(d => d.OrderDetail)
+              .HasForeignKey(pp => pp.ProductId)
+              .HasConstraintName("Fk_OrderDetailToProduct");
+
+            base.OnModelCreating(modelBuilder);// identity tablolarını oluşturmak için
         }
     }
 }

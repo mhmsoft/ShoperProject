@@ -25,6 +25,7 @@ namespace Shoper.Entities
         public ICollection<ProductDiscount> ProductDiscount { get; set; }
         public ICollection<ProductComment> ProductComment { get; set; }
         public ICollection<ProductItemValue> ProductItemValue { get; set; }
+        public ICollection<OrderDetail> OrderDetail { get; set; }
     }
 
 }

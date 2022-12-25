@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Shoper.BusinessLogic.Interface;
+using System.Data;
 
 namespace Shoper.Management.Controllers
 {
+    [Authorize(Roles = "manager")]
     public class CustomerController : Controller
     {
         private readonly ICustomerService _customerService;

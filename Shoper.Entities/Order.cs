@@ -17,6 +17,7 @@ namespace Shoper.Entities
         public OrderStatus Status { get; set; }
         public float TotalAmount { get; set; }
         public virtual Customer Customer { get; set; }
+        public virtual ICollection<OrderDetail> OrderDetail { get; set; }
     }
     public enum OrderStatus
     {

@@ -15,11 +15,11 @@ namespace Shoper.Data.Validator
 
             if (user.UserName.Length < 6)
             {
-                errors.Add(new() { Code = "UserNameLength", Description = "User name must be at least 6 characters." });
+                errors.Add(new() { Code = "UserNameLength", Description = "Kullanıcı adı 6 karakterden az olamaz." });
             }
             if (user.Email.Substring(0, user.Email.IndexOf("@")) == user.UserName)
             {
-                errors.Add(new() { Code = "UserNameContainsEmail", Description = "User name can not contains email name." });
+                errors.Add(new() { Code = "UserNameContainsEmail", Description = "kullanıcı adı eposta içeriğidnen farklı olması gerekir." });
             }
 
             if (errors.Any())
