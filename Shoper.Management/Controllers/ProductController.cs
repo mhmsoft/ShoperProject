@@ -19,6 +19,7 @@ namespace Shoper.Management.Controllers
         private readonly IProductCommentService _productCommentService;
         private readonly IProductItemService _productItemService;
         private readonly IProductItemValueService _productItemValueService;
+        private readonly IManifactureService _manifactureService;
         public ProductController(
             IProductService productService,
             ICategoryService categoryService,
@@ -27,7 +28,8 @@ namespace Shoper.Management.Controllers
             IProductDiscountService productDiscountService,
             IProductCommentService productCommentService,
             IProductItemService productItemService,
-            IProductItemValueService productItemValueService
+            IProductItemValueService productItemValueService,
+            IManifactureService manifactureService
             )
         {
             this._productService = productService;
@@ -38,6 +40,7 @@ namespace Shoper.Management.Controllers
             this._productCommentService= productCommentService;
             this._productItemService= productItemService;
             this._productItemValueService = productItemValueService;
+            this._manifactureService = manifactureService;
         }
         public IActionResult Index()
         {
@@ -46,6 +49,7 @@ namespace Shoper.Management.Controllers
         public IActionResult Create()
         {
             ViewData["categories"] = _categoryService.GetAll();
+            ViewBag.Manifactures =  new SelectList(_manifactureService.GetAll(),"ManifactureId","ManifactureName");
             return View();
         }
         [HttpPost]
@@ -90,7 +94,7 @@ namespace Shoper.Management.Controllers
             model.Product=_productService.Get(id);
             model.Price = _productPriceService.GetExp(x => x.ProductId == id).FirstOrDefault(x=>x.isValidFlag==true);
             model.Images = _productImageService.GetExp(x => x.ProductId == id).ToList();
-            
+            ViewBag.Manifactures = new SelectList(_manifactureService.GetAll(), "ManifactureId", "ManifactureName",model.Product.ManifactureId);
             ViewBag.Categories =  new SelectList(_categoryService.GetAll(),"CategoryId","CategoryName", model.Product.CategoryId);
             return View(model);
         }

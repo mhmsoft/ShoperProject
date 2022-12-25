@@ -19,13 +19,16 @@ namespace Shoper.Entities
         public string Description { get; set; }
         [Display(Name = "Kategori Kodu")]
         public int CategoryId { get; set; }
-        public Category ProductCategory { get; set; }
-        public ICollection<ProductPrice> ProductPrice { get; set; }
-        public ICollection<ProductImage> ProductImage { get; set; }
-        public ICollection<ProductDiscount> ProductDiscount { get; set; }
-        public ICollection<ProductComment> ProductComment { get; set; }
-        public ICollection<ProductItemValue> ProductItemValue { get; set; }
-        public ICollection<OrderDetail> OrderDetail { get; set; }
+        [Display(Name = "Marka Kodu")]
+        public int ManifactureId { get; set; }
+        public  virtual Manifacture Manifacture { get; set; }
+        public virtual Category ProductCategory { get; set; }
+        public virtual ICollection<ProductPrice> ProductPrice { get; set; }
+        public virtual ICollection<ProductImage> ProductImage { get; set; }
+        public virtual ICollection<ProductDiscount> ProductDiscount { get; set; }
+        public virtual ICollection<ProductComment> ProductComment { get; set; }
+        public virtual ICollection<ProductItemValue> ProductItemValue { get; set; }
+        public virtual ICollection<OrderDetail> OrderDetail { get; set; }
     }
 
 }

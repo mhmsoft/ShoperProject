@@ -1,0 +1,41 @@
+﻿@model Shoper.Entities.Manifacture
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+
+<h4>Marka Düzenleme</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                
+                <input type="hidden" asp-for="ManifactureId" class="form-control" />
+                <span asp-validation-for="ManifactureId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ManifactureName" class="control-label"></label>
+                <input asp-for="ManifactureName" class="form-control" />
+                <span asp-validation-for="ManifactureName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Resim </label>
+                <input type="file" name="img" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">Resim </label>
+                <img src="~/images/@(Model.ImagePath!=null?Model.ImagePath:"no-image.png")" style="margin:5px;height:100px;width:120px;" />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Değiştir" class="btn btn-primary" />
+                <a class="btn btn-primary" asp-action="Index">Anasayfa</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+

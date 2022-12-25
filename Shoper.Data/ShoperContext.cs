@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Shoper.Entities;
+using System.Net.Mail;
 
 namespace Shoper.Data
 {
@@ -15,6 +16,7 @@ namespace Shoper.Data
         {
 
         }
+        public DbSet<Manifacture> Manifactures { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductImage> ProductImages { get; set; }
@@ -38,8 +40,9 @@ namespace Shoper.Data
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-           
+
             // Tablo ismi ve tabloya ait primary key verilir.
+            modelBuilder.Entity<Manifacture>().ToTable("Manifacture").HasKey(c => c.ManifactureId);
             modelBuilder.Entity<Category>().ToTable("Category").HasKey(c=>c.CategoryId);
             modelBuilder.Entity<Product>().ToTable("Product").HasKey(p=>p.ProductId);
             modelBuilder.Entity<ProductPrice>().ToTable("ProductPrice").HasKey(pp=>pp.PriceId);
@@ -58,6 +61,13 @@ namespace Shoper.Data
             modelBuilder.Entity<Order>().Property(d => d.OrderId).UseIdentityColumn(100, 1);
 
             // Relations
+            //category-product
+            modelBuilder.Entity<Manifacture>()
+                .HasMany<Product>(c => c.Products)
+                .WithOne(p => p.Manifacture)
+                .HasForeignKey(p => p.ManifactureId)
+                .HasConstraintName("Fk_ProductToManifacture")
+                .OnDelete(DeleteBehavior.Cascade);
             //category-product
             modelBuilder.Entity<Category>()
                 .HasMany<Product>(c => c.Products)

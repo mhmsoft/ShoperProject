@@ -27,7 +27,7 @@ namespace Shoper.Management.Controllers
             _mailSender = mailSender;
         }
 
-        [Authorize(Roles = "manager")]
+        
         public IActionResult Index()
         {
             return View();

@@ -1,0 +1,67 @@
+﻿@model IEnumerable<Shoper.Entities.Manifacture>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h4 >Markalar</h4>
+
+<p>
+    <a asp-action="Create">Yeni Marka</a>
+</p>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ManifactureId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ManifactureName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ImagePath)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr id="@item.ManifactureId">
+            <td>
+                @Html.DisplayFor(modelItem => item.ManifactureId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ManifactureName)
+            </td>
+                <td>
+                    @if (!string.IsNullOrEmpty(item.ImagePath))
+                    {
+                        <img src="~/images/@item.ImagePath" style="margin:5px;width:100px;height:80px;" />
+                    }
+                    else
+                    {
+                        <img src="~/images/no-image.png" style="margin:5px;width:100px;height:80px;" />
+                    }
+
+                </td>
+                <td>                   
+                    @Html.ActionLink("Düzenle", "Edit", new { id=item.ManifactureId },new{@class="btn btn-warning"})
+                    <a class="btn  btn-danger text-white" href="javascript:void(0);" data-id="@item.ManifactureId" id="sil">Sil</a>
+                </td>
+        </tr>
+}
+    </tbody>
+</table>
+<script type="text/javascript">
+    $(document).on('click', '#sil', function () {
+        var manifactureid = $(this).attr("data-id");
+        $.ajax({
+            url: "@Url.Action("Delete")",
+            data: { id: manifactureid },
+            type: "POST",
+            success: function (data) {
+                $("tr#" + manifactureid).remove();
+            }
+        });
+    });
+</script>
