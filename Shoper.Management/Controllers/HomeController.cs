@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using MimeKit;
 using Shoper.BusinessLogic.Utility;
 using Shoper.Data;
 using Shoper.Management.Models;
@@ -9,6 +10,7 @@ using System.Diagnostics;
 
 namespace Shoper.Management.Controllers
 {
+
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -16,7 +18,7 @@ namespace Shoper.Management.Controllers
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IMailSender _mailSender;
 
-        public HomeController(ILogger<HomeController> logger, 
+        public HomeController(ILogger<HomeController> logger,
                                     UserManager<AppUser> userManager,
                                     SignInManager<AppUser> signInManager,
                                     IMailSender mailSender)
@@ -27,7 +29,7 @@ namespace Shoper.Management.Controllers
             _mailSender = mailSender;
         }
 
-        
+        [Authorize(Roles="manager")]
         public IActionResult Index()
         {
             return View();
@@ -69,8 +71,6 @@ namespace Shoper.Management.Controllers
 
                 if (result.Succeeded)
                 {
-                   
-
                     var confirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     var confirmationLink = Url.Action("ConfirmEmail", "Home", new
                     {
@@ -78,26 +78,27 @@ namespace Shoper.Management.Controllers
                         token = confirmationToken
                     }, HttpContext.Request.Scheme);
 
-                await  _mailSender.MailSend(new Email()
-                {
-                    Subject = "Confirm e-mail",
-                    Body = $"Please <a href='{confirmationLink}'>click</a> to confirm your e-mail address.",
-                    To = user.Email
-                });
+                    var emailResult = await _mailSender.MailSend(new Email()
+                    {
+                        Subject = "Confirm e-mail",
+                        Body = $"Please <a href='{confirmationLink}'>click</a> to confirm your e-mail address.",
+                        To = InternetAddress.Parse(user.Email)
+                    }) ;
 
-                if (_userManager.Options.SignIn.RequireConfirmedAccount)
-                {
+                    if(!emailResult)
+                    {
+                        ModelState.AddModelError("Email", "Mail sunucu hatası");
+                        return View(model);
+                    }
+                    if (_userManager.Options.SignIn.RequireConfirmedAccount)
+                    {
 
-                }
-                else {
+                    }
+                    else {
 
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return Redirect(ReturnUrl);
-                }
-
-                    
-                      
-                    
+                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        return Redirect(ReturnUrl);
+                    }
                   
                 }
                 result.Errors.ToList().ForEach(f => ModelState.AddModelError(string.Empty, f.Description));
@@ -136,6 +137,7 @@ namespace Shoper.Management.Controllers
                     // Account locked out, try again {timeLeft.Minutes} minutes later.
                     ModelState.AddModelError(string.Empty, $"This account has been locked out, please try again {timeLeft.Minutes} minutes later.");
                 }
+               
                 else
                 {
                     ModelState.AddModelError(string.Empty, "Invalid e-mail or password.");
@@ -167,7 +169,9 @@ namespace Shoper.Management.Controllers
 
 
         }
-        public async Task <IActionResult> LogOut()
+		[HttpGet]
+		[AllowAnonymous]
+		public async Task <IActionResult> LogOut()
         {
             await _signInManager.SignOutAsync();
             //return RedirectToAction("Login");

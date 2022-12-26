@@ -2,17 +2,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Mail;
+
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
+using MimeKit;
+using MailKit.Net.Smtp;
 
 namespace Shoper.BusinessLogic.Utility
 {
     public interface IMailSender
     {
-        public Task MailSend(Email mail);
+        public Task<bool> MailSend(Email mail);
     }
    
     public class MailSettings
@@ -27,7 +29,7 @@ namespace Shoper.BusinessLogic.Utility
 
         public string Subject  { get; set; }
         public string  Body { get; set; }
-        public string  To { get; set; }
+        public InternetAddress  To { get; set; }
     }
     public class MailHelper : IMailSender
     {
@@ -40,31 +42,44 @@ namespace Shoper.BusinessLogic.Utility
             
         }
 
-        public async Task MailSend(Email mail)
+        public async Task<bool> MailSend(Email mail)
         {
-            string host = _mailSettings.Host;
-            int port = _mailSettings.Port;
-            string fromAddress = _mailSettings.From;
-            string userName = _mailSettings.From;
-            string password = _mailSettings.Password;
-            using (MailMessage mm = new MailMessage(fromAddress, mail.To))
-            {
-                mm.Subject = mail.Subject;
-                mm.Body = mail.Body;
+            
+				string host = _mailSettings.Host;
+				int port = _mailSettings.Port;
+				string fromAddress = _mailSettings.From;
+				string userName = _mailSettings.From;
+				string password = _mailSettings.Password;
+                
+                var message = new MimeMessage();
+                message.Subject = mail.Subject;
+			    message.From.Add(InternetAddress.Parse(fromAddress));
+                message.To.Add(mail.To);
+                message.Body= new TextPart(MimeKit.Text.TextFormat.Text) { Text = mail.Body };
+				
 
-                mm.IsBodyHtml = false;
-                using (SmtpClient smtp = new SmtpClient())
-                {
-                    smtp.Host = host;
-                    smtp.EnableSsl = true;
-                    NetworkCredential NetworkCred = new NetworkCredential(userName, password);
-                    smtp.UseDefaultCredentials = true;
-                    smtp.Credentials = NetworkCred;
-                    smtp.Port = port;
-                    await smtp.SendMailAsync(mm);
-                   
-                }
-            }
-        }
+				using (var client = new SmtpClient())
+				{
+					try
+					{   // 465 port kullanın 
+						client.Connect(host, port,MailKit.Security.SecureSocketOptions.SslOnConnect);
+						client.AuthenticationMechanisms.Remove("XOAUTH2");
+						client.Authenticate(userName, password);
+						await client.SendAsync(message);
+						return true;
+					}
+					catch
+					{
+					//log an error message or throw an exception or both.
+					return false;
+					}
+					finally
+					{
+						client.Disconnect(true);
+						client.Dispose();
+					}
+				}
+
+			}
     }
 }

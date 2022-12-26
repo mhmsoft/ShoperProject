@@ -4,8 +4,9 @@ using Shoper.BusinessLogic.Interface;
 using Shoper.Entities;
 
 namespace Shoper.Management.Controllers
-{    
-    public class CategoryController : Controller
+{
+	[Authorize(Roles = "manager")]
+	public class CategoryController : Controller
     {
         private readonly ICategoryService _categoryService;
         private readonly IProductItemService _itemService;

@@ -21,7 +21,7 @@ namespace Shoper.Entities
         public int CategoryId { get; set; }
         [Display(Name = "Marka Kodu")]
         public int ManifactureId { get; set; }
-        public  virtual Manifacture Manifacture { get; set; }
+        public   Manifacture Manifacture { get; set; }
         public virtual Category ProductCategory { get; set; }
         public virtual ICollection<ProductPrice> ProductPrice { get; set; }
         public virtual ICollection<ProductImage> ProductImage { get; set; }

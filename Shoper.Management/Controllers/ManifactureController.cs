@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Shoper.BusinessLogic.Interface;
 using Shoper.BusinessLogic.Service;
 using Shoper.Entities;
+using System.Data;
 
 namespace Shoper.Management.Controllers
 {
-    public class ManifactureController : Controller
+	[Authorize(Roles = "manager")]
+	public class ManifactureController : Controller
     {
         private readonly IManifactureService _manifactureService;
         public ManifactureController(IManifactureService manifactureService)
