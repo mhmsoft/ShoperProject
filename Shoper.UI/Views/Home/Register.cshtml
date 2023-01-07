@@ -1,0 +1,54 @@
+﻿@model Shoper.UI.Models.ViewModels.registerViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var ReturnUrl = @Context.Request.Query["ReturnUrl"];
+}
+<div class="col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4 md-padding">
+    <h1 class="align-center">Yeni Kullanıcı</h1>
+    <br>
+    <div  class="text-success">
+        @if (ViewBag.EmailSuccess==true)
+        {
+            <div class="col-sm-12">
+                @ViewBag.Info
+            </div>
+
+        }
+    </div>
+    <form asp-action="Register" asp-route-ReturnUrl="@ReturnUrl">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-12">
+                    <input type="text" asp-for="Name" placeholder="First Name" required="" class="form-control" /><br>
+                </div>
+                <div class="col-sm-12">
+                    <input type="text" asp-for="LastName" placeholder="First Name" required="" class="form-control" /><br>
+                </div>
+                <div class="col-sm-12">
+                    <input type="text" asp-for="Phone"  placeholder="Phone" required="" class="form-control" /><br>
+                </div>
+                <div class="col-sm-12">
+                    <input type="email" asp-for="Email"  placeholder="E-mail" required="" class="form-control" /><br>
+                </div>
+                <div class="col-sm-12">
+                    <input type="password" asp-for="Password" placeholder="Password" required="" class="form-control" /><br>
+                </div>
+                <div class="col-sm-12">
+                    <input type="password" asp-for="ConfirmPassword" placeholder="Confirm Password" required="" class="form-control" /><br>
+                </div>
+            </div>
+        </div>
+        <br>
+
+        <button type="submit" class="btn btn-primary">Üye Ol</button>
+        <a href="#" class="xs-margin">Terms ></a>
+
+        <br><br>
+        <p>
+            By creating an account you will be able to shop faster, be up to date on an order's status, and keep track of the orders you have previously made.
+        </p>
+    </form>
+
+    <br class="hidden-sm hidden-md hidden-lg">
+</div>

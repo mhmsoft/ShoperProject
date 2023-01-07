@@ -1733,7 +1733,7 @@ p.grid1 {
     padding: 6.5em 0em;
 }
 .login-head {
-    background: url(~/images/login.jpg)no-repeat;
+    background: url(../../images/login.jpg)no-repeat;
     background-size: cover;
     min-height: 150px;
 }
@@ -1934,7 +1934,7 @@ p.grid1 {
     box-shadow: 0px 0px 2px 1px rgba(0,0,0,0.15);
 }
 .signup-head {
-    background: url(~/images/login.jpg)no-repeat;
+    background: url(../../images/login.jpg)no-repeat;
     background-size: cover;
     min-height: 150px;
 }

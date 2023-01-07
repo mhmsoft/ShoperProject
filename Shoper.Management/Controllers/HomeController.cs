@@ -67,9 +67,9 @@ namespace Shoper.Management.Controllers
 
                 var result = await _userManager.CreateAsync(user, model.Password);
 
-                var roleResult = await _userManager.AddToRoleAsync(user, "manager");
+                var roleResult = await _userManager.AddToRoleAsync(user, "manager"); // role ataması
 
-                if (result.Succeeded)
+                if (result.Succeeded) // user oluşturulmuşsa
                 {
                     var confirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     var confirmationLink = Url.Action("ConfirmEmail", "Home", new
@@ -92,7 +92,7 @@ namespace Shoper.Management.Controllers
                     }
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
-
+                         
                     }
                     else {
 
@@ -151,7 +151,7 @@ namespace Shoper.Management.Controllers
             return View(model);
         }
        
-        public async Task<IActionResult> ComfirmEmail(string userId, string token)
+        public async Task<IActionResult> ConfirmEmail(string userId, string token)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user != null)

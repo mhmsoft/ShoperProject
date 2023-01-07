@@ -37,7 +37,12 @@ namespace Shoper.Data.Repository
         {
             using (var context = new ShoperContext())
             {
-                var result = context.Products.Include(p=>p.ProductCategory).ToList();                
+                var result = context.Products
+                    .Include(p=>p.ProductCategory)
+                    .Include(price=>price.ProductPrice)
+                    .Include(img=>img.ProductImage)
+                    .Include(Item=>Item.ProductItemValue)
+                    .ToList();                
                 return result;
             }
         }
@@ -46,7 +51,8 @@ namespace Shoper.Data.Repository
         {
             using (var context = new ShoperContext())
             {
-                var result = context.Products.Include("ProductCategory").FirstOrDefault(x=>x.ProductId==id);               
+                var result = context.Products
+                    .Include("ProductCategory").FirstOrDefault(x=>x.ProductId==id);               
                 return result;
             }
         }

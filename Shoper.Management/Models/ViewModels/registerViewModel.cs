@@ -25,6 +25,7 @@ namespace Shoper.Management.Models.ViewModels
         [Display(Name = "Şifre Doğrulama")]
         [Compare("Password", ErrorMessage = "Şifreler eşleşmiyor")]
         public string ConfirmPassword { get; set; }
+        public string ReturnUrl { get; set; }
 
 
     }

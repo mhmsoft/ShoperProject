@@ -62,7 +62,7 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
     options.Password.RequireLowercase = true;
     options.Password.RequireUppercase = true;
     //options.Password.RequireNonAlphanumeric = true;
-    options.SignIn.RequireConfirmedAccount = false;
+    options.SignIn.RequireConfirmedAccount = true;
 })
 
                 .AddRoles<IdentityRole>()
@@ -78,7 +78,7 @@ builder.Services.AddSession(options => {
 builder.Services.ConfigureApplicationCookie(_ =>
 {
     _.LoginPath = new PathString("/Home/Login");
-    _.LogoutPath = new PathString("/Home/SignOut");
+    _.LogoutPath = new PathString("/Home/LogOut");
     _.Cookie = new CookieBuilder
     {
         Name = "ShoperCookie", //Oluþturulacak Cookie'yi isimlendiriyoruz.

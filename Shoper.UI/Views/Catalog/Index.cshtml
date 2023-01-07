@@ -1,0 +1,204 @@
+﻿@model IEnumerable<Shoper.Entities.Product>
+@{
+}
+<!-- Filter -->
+<div class="col-sm-3 filter">
+    <div class="item">
+        <div class="title">
+            <a href="#clear" data-action="open" class="down"> <i class="ion-android-arrow-dropdown"></i> Open</a>
+            <a href="#clear" data-action="clear"> <i class="ion-ios-trash-outline"></i> Clear</a>
+            <h1 class="h4">Type</h1>
+        </div>
+
+        <div class="controls">
+            <div class="checkbox-group" data-status="inactive">
+                <div class="checkbox"><i class="ion-android-done"></i></div>
+                <div class="label" data-value="Laptops">Laptops</div>
+                <input type="checkbox" name="checkbox" value="">
+            </div>
+
+            <div class="checkbox-group" data-status="inactive">
+                <div class="checkbox"><i class="ion-android-done"></i></div>
+                <div class="label" data-value="Tablets">Tablets</div>
+                <input type="checkbox" name="checkbox" value="">
+            </div>
+
+            <div class="checkbox-group" data-status="inactive">
+                <div class="checkbox"><i class="ion-android-done"></i></div>
+                <div class="label" data-value="Hybrid">Hybrids</div>
+                <input type="checkbox" name="checkbox" value="">
+            </div>
+        </div>
+    </div>
+
+    <br>
+
+    <div class="item">
+        <div class="title">
+            <a href="#clear" data-action="open" class="down"> <i class="ion-android-arrow-dropdown"></i> Open</a>
+            <a href="#clear" data-action="clear"> <i class="ion-ios-trash-outline"></i> Clear</a>
+            <h1 class="h4">Screen</h1>
+        </div>
+
+        <div class="controls grid">
+            <div class="checkbox-group" data-status="inactive">
+                <div class="checkbox"><i class="ion-android-done"></i></div>
+                <div class="label" data-value="7 in">7 in</div>
+                <input type="checkbox" name="checkbox" value="">
+            </div>
+
+            <div class="checkbox-group" data-status="inactive">
+                <div class="checkbox"><i class="ion-android-done"></i></div>
+                <div class="label" data-value="10 in">10 in</div>
+                <input type="checkbox" name="checkbox" value="">
+            </div>
+
+            <div class="checkbox-group" data-status="inactive">
+                <div class="checkbox"><i class="ion-android-done"></i></div>
+                <div class="label" data-value="11 in">11 in</div>
+                <input type="checkbox" name="checkbox" value="">
+            </div>
+
+            <div class="checkbox-group" data-status="inactive">
+                <div class="checkbox"><i class="ion-android-done"></i></div>
+                <div class="label" data-value="14 in">14 in</div>
+                <input type="checkbox" name="checkbox" value="">
+            </div>
+
+            <div class="checkbox-group" data-status="inactive">
+                <div class="checkbox"><i class="ion-android-done"></i></div>
+                <div class="label" data-value="15 in">15 in</div>
+                <input type="checkbox" name="checkbox" value="">
+            </div>
+
+            <div class="checkbox-group" data-status="inactive">
+                <div class="checkbox"><i class="ion-android-done"></i></div>
+                <div class="label" data-value="17 in">17 in</div>
+                <input type="checkbox" name="checkbox" value="">
+            </div>
+        </div>
+    </div>
+
+    <br>
+
+    <div class="item">
+        <div class="title">
+            <a href="#clear" data-action="open" class="down"> <i class="ion-android-arrow-dropdown"></i> Open</a>
+            <a href="#clear" data-action="clear-price"> <i class="ion-ios-trash-outline"></i> Clear</a>
+            <h1 class="h4">Price</h1>
+        </div>
+
+        <div class="controls">
+            <br>
+            <div id="slider-price"></div>
+            <br>
+            <p id="amount"></p>
+        </div>
+    </div>
+    <br>
+
+    <div class="item lite">
+        <div class="title">
+            <a href="#clear" data-action="open" class="down"> <i class="ion-android-arrow-dropdown"></i> Open</a>
+            <a href="#clear" data-action="clear"> <i class="ion-ios-trash-outline"></i> Clear</a>
+            <h1 class="h4">Manufacturer</h1>
+        </div>
+
+        <div class="controls">
+            <div class="checkbox-group" data-status="inactive">
+                <div class="checkbox"><i class="ion-android-done"></i></div>
+                <div class="label" data-value="Hp">Hp</div>
+                <input type="checkbox" name="checkbox" value="">
+            </div>
+
+            <div class="checkbox-group" data-status="inactive">
+                <div class="checkbox"><i class="ion-android-done"></i></div>
+                <div class="label" data-value="ASUS">ASUS</div>
+                <input type="checkbox" name="checkbox" value="">
+            </div>
+
+            <div class="checkbox-group" data-status="inactive">
+                <div class="checkbox"><i class="ion-android-done"></i></div>
+                <div class="label" data-value="Acer">Acer</div>
+                <input type="checkbox" name="checkbox" value="">
+            </div>
+
+            <div class="checkbox-group" data-status="inactive">
+                <div class="checkbox"><i class="ion-android-done"></i></div>
+                <div class="label" data-value="Dell">Dell</div>
+                <input type="checkbox" name="checkbox" value="">
+            </div>
+
+            <div class="checkbox-group" data-status="inactive">
+                <div class="checkbox"><i class="ion-android-done"></i></div>
+                <div class="label" data-value="Sony">Sony</div>
+                <input type="checkbox" name="checkbox" value="">
+            </div>
+
+            <div class="checkbox-group" data-status="inactive">
+                <div class="checkbox"><i class="ion-android-done"></i></div>
+                <div class="label" data-value="Apple">Apple</div>
+                <input type="checkbox" name="checkbox" value="">
+            </div>
+
+            <div class="checkbox-group" data-status="inactive">
+                <div class="checkbox"><i class="ion-android-done"></i></div>
+                <div class="label" data-value="Lenovo">Lenovo</div>
+                <input type="checkbox" name="checkbox" value="">
+            </div>
+
+            <div class="checkbox-group" data-status="inactive">
+                <div class="checkbox"><i class="ion-android-done"></i></div>
+                <div class="label" data-value="Microsoft">Microsoft</div>
+                <input type="checkbox" name="checkbox" value="">
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /// -->
+<!-- Products -->
+<div class="col-sm-9 products">
+    <div class="row">
+
+        @foreach (var product in Model)
+        {
+            <div class="col-sm-6 col-md-4 product">
+                <a href="#favorites" class="favorites" data-favorite="inactive"><i class="ion-ios-heart-outline"></i></a>
+                <a asp-action="ProductDetail">
+                   <img src="@(product.ProductImage!=null? "data:image/png;base64,"+Convert.ToBase64String(product.ProductImage.FirstOrDefault().Image):"~/images/no-image.png")" alt="@product.ProductName" />
+                </a>
+
+                <div class="content">
+                    <h1 class="h4">@product.ProductName</h1>
+                    <p class="price">@product.ProductPrice.FirstOrDefault(x=>x.isValidFlag==true).Price</p>
+                    <label>@product.ProductCategory.CategoryName</label>
+
+                    <a asp-action="ProductDetail" class="btn btn-link"> Detay</a>
+                    <button class="btn btn-primary btn-rounded btn-sm"> <i class="ion-bag"></i> Sepete ekle</button>
+                </div>
+            </div>
+        }
+        
+
+    </div>
+
+    <nav>
+        <ul class="pagination">
+            <li>
+                <a href="#" aria-label="Previous">
+                    <span aria-hidden="true"><i class="ion-ios-arrow-left"></i></span>
+                </a>
+            </li>
+            <li class="active"><a href="#">1</a></li>
+            <li><a href="#">2</a></li>
+            <li><a href="#">3</a></li>
+            <li class="disabled"><a href="#">..</a></li>
+            <li><a href="#">10</a></li>
+            <li>
+                <a href="#" aria-label="Next">
+                    <span aria-hidden="true"><i class="ion-ios-arrow-right"></i></span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
