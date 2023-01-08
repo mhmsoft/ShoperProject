@@ -1,34 +1,73 @@
-﻿@model IEnumerable<Shoper.Entities.Product>
-@{
-}
+﻿@using Shoper.BusinessLogic.Interface
+@using X.PagedList
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+@inject ICategoryService _categoryService;
+@inject IManifactureService _manifactureService;
+
+@model IPagedList<Shoper.Entities.Product>
+<div class="container tags">
+    <div class="btn-group pull-right">
+       
+            <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="ion-arrow-down-b"></i> Sıralama
+            </button>           
+      
+        
+        <ul class="dropdown-menu">
+            <li class="active"><a href="@Url.Action("Index","Catalog",new{page=ViewBag.page,orderBy=1})" id="OrderNameAsc"> <i class="ion-arrow-down-c"></i> İsim [A-Z]</a></li>
+            <li><a href="@Url.Action("Index","Catalog",new{page=ViewBag.page,orderBy=2})" id="OrderNameDesc"> <i class="ion-arrow-up-c"></i> İsim [Z-A]</a></li>
+            <li><a href="@Url.Action("Index","Catalog",new{page=ViewBag.page,orderBy=3})" id="OrderPriceAsc"> <i class="ion-arrow-down-c"></i> Fiyat [Low-High]</a></li>
+            <li><a href="@Url.Action("Index","Catalog",new{page=ViewBag.page,orderBy=4})" id="OrderPriceDesc"> <i class="ion-arrow-up-c"></i> Fiyat [High-Low]</a></li>
+        </ul>
+    </div>
+
+    <p>Search by tags</p>
+    <div class="btn-group" data-toggle="buttons">
+        <label class="btn btn-default btn-xs active">
+            <input type="radio" name="options" id="option1" checked> All products
+        </label>
+        <label class="btn btn-default btn-xs">
+            <input type="radio" name="options" id="option2"> Business
+        </label>
+        <label class="btn btn-default btn-xs">
+            <input type="radio" name="options" id="option3"> Home
+        </label>
+        <label class="btn btn-default btn-xs">
+            <input type="radio" name="options" id="option4"> Mobility
+        </label>
+        <label class="btn btn-default btn-xs">
+            <input type="radio" name="options" id="option5"> Powerfull
+        </label>
+        <label class="btn btn-default btn-xs">
+            <input type="radio" name="options" id="option6"> Gaming
+        </label>
+    </div>
+</div>
 <!-- Filter -->
 <div class="col-sm-3 filter">
     <div class="item">
         <div class="title">
-            <a href="#clear" data-action="open" class="down"> <i class="ion-android-arrow-dropdown"></i> Open</a>
-            <a href="#clear" data-action="clear"> <i class="ion-ios-trash-outline"></i> Clear</a>
-            <h1 class="h4">Type</h1>
+            <a href="#clear" data-action="open" class="down"> <i class="ion-android-arrow-dropdown"></i> Aç</a>
+         
+            <h1 class="h4">Kategori</h1>
         </div>
-
+        
         <div class="controls">
-            <div class="checkbox-group" data-status="inactive">
-                <div class="checkbox"><i class="ion-android-done"></i></div>
-                <div class="label" data-value="Laptops">Laptops</div>
-                <input type="checkbox" name="checkbox" value="">
-            </div>
-
-            <div class="checkbox-group" data-status="inactive">
-                <div class="checkbox"><i class="ion-android-done"></i></div>
-                <div class="label" data-value="Tablets">Tablets</div>
-                <input type="checkbox" name="checkbox" value="">
-            </div>
-
-            <div class="checkbox-group" data-status="inactive">
-                <div class="checkbox"><i class="ion-android-done"></i></div>
-                <div class="label" data-value="Hybrid">Hybrids</div>
-                <input type="checkbox" name="checkbox" value="">
-            </div>
+           <form asp-action="Index" id="FormFilterCategory">
+            @foreach (var category in _categoryService.GetAll())
+            {
+                <div class="checkbox-group" data-status="inactive">
+                    <div class="checkbox"><i class="ion-android-done"></i></div>
+                        <div class="label" data-value="">@category.CategoryName</div>
+                        <input type="checkbox" name="category[]" id="category[]" value="@category.CategoryId">
+                </div>
+            }
+            <button id="btnFilterCategory">Filtrele</button>
+            </form>
         </div>
+          
+       
     </div>
 
     <br>
@@ -99,59 +138,22 @@
 
     <div class="item lite">
         <div class="title">
-            <a href="#clear" data-action="open" class="down"> <i class="ion-android-arrow-dropdown"></i> Open</a>
-            <a href="#clear" data-action="clear"> <i class="ion-ios-trash-outline"></i> Clear</a>
-            <h1 class="h4">Manufacturer</h1>
+            <a href="#clear" data-action="open" class="down"> <i class="ion-android-arrow-dropdown"></i> Aç</a>
+           
+            <h1 class="h4">Markalar</h1>
         </div>
 
         <div class="controls">
-            <div class="checkbox-group" data-status="inactive">
+            @foreach (var manifacture in _manifactureService.GetAll())
+            {
+                <div class="checkbox-group" data-status="inactive">
                 <div class="checkbox"><i class="ion-android-done"></i></div>
-                <div class="label" data-value="Hp">Hp</div>
+                <div class="label" data-value="Hp">@manifacture.ManifactureName</div>
                 <input type="checkbox" name="checkbox" value="">
             </div>
+            }
+            
 
-            <div class="checkbox-group" data-status="inactive">
-                <div class="checkbox"><i class="ion-android-done"></i></div>
-                <div class="label" data-value="ASUS">ASUS</div>
-                <input type="checkbox" name="checkbox" value="">
-            </div>
-
-            <div class="checkbox-group" data-status="inactive">
-                <div class="checkbox"><i class="ion-android-done"></i></div>
-                <div class="label" data-value="Acer">Acer</div>
-                <input type="checkbox" name="checkbox" value="">
-            </div>
-
-            <div class="checkbox-group" data-status="inactive">
-                <div class="checkbox"><i class="ion-android-done"></i></div>
-                <div class="label" data-value="Dell">Dell</div>
-                <input type="checkbox" name="checkbox" value="">
-            </div>
-
-            <div class="checkbox-group" data-status="inactive">
-                <div class="checkbox"><i class="ion-android-done"></i></div>
-                <div class="label" data-value="Sony">Sony</div>
-                <input type="checkbox" name="checkbox" value="">
-            </div>
-
-            <div class="checkbox-group" data-status="inactive">
-                <div class="checkbox"><i class="ion-android-done"></i></div>
-                <div class="label" data-value="Apple">Apple</div>
-                <input type="checkbox" name="checkbox" value="">
-            </div>
-
-            <div class="checkbox-group" data-status="inactive">
-                <div class="checkbox"><i class="ion-android-done"></i></div>
-                <div class="label" data-value="Lenovo">Lenovo</div>
-                <input type="checkbox" name="checkbox" value="">
-            </div>
-
-            <div class="checkbox-group" data-status="inactive">
-                <div class="checkbox"><i class="ion-android-done"></i></div>
-                <div class="label" data-value="Microsoft">Microsoft</div>
-                <input type="checkbox" name="checkbox" value="">
-            </div>
         </div>
     </div>
 </div>
@@ -165,12 +167,15 @@
             <div class="col-sm-6 col-md-4 product">
                 <a href="#favorites" class="favorites" data-favorite="inactive"><i class="ion-ios-heart-outline"></i></a>
                 <a asp-action="ProductDetail">
-                   <img src="@(product.ProductImage!=null? "data:image/png;base64,"+Convert.ToBase64String(product.ProductImage.FirstOrDefault().Image):"~/images/no-image.png")" alt="@product.ProductName" />
+                    <img src="@(product.ProductImage!=null? "data:image/png;base64,"+Convert.ToBase64String(product.ProductImage.FirstOrDefault().Image):"~/images/no-image.png")" alt="@product.ProductName" />
                 </a>
 
                 <div class="content">
                     <h1 class="h4">@product.ProductName</h1>
-                    <p class="price">@product.ProductPrice.FirstOrDefault(x=>x.isValidFlag==true).Price</p>
+                    <p class="price">
+                        @product.ProductPrice.FirstOrDefault(x=>x.isValidFlag==true).Price;
+
+                    </p>
                     <label>@product.ProductCategory.CategoryName</label>
 
                     <a asp-action="ProductDetail" class="btn btn-link"> Detay</a>
@@ -178,27 +183,36 @@
                 </div>
             </div>
         }
-        
+
 
     </div>
 
     <nav>
-        <ul class="pagination">
-            <li>
-                <a href="#" aria-label="Previous">
-                    <span aria-hidden="true"><i class="ion-ios-arrow-left"></i></span>
-                </a>
-            </li>
-            <li class="active"><a href="#">1</a></li>
-            <li><a href="#">2</a></li>
-            <li><a href="#">3</a></li>
-            <li class="disabled"><a href="#">..</a></li>
-            <li><a href="#">10</a></li>
-            <li>
-                <a href="#" aria-label="Next">
-                    <span aria-hidden="true"><i class="ion-ios-arrow-right"></i></span>
-                </a>
-            </li>
-        </ul>
+
+        @Html.PagedListPager(Model, page => Url.Action("index", new { page = page,pageSize=5,orderBy = ViewBag.orderBy }), new PagedListRenderOptions()
+            {
+            ActiveLiElementClass = "active",
+            PageClasses = new[]{ "page-link"},
+            LiElementClasses=new[] { "page-item" },
+            UlElementClasses = new[] { "pagination","justify-content-center", "mt-3" },
+            LinkToNextPageFormat = "Sonraki",
+            LinkToPreviousPageFormat = "Önceki",
+            MaximumPageNumbersToDisplay = 5,
+            DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+            DisplayLinkToNextPage = PagedListDisplayMode.Always
+            })
+       
     </nav>
 </div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+<script type="text/javascript">
+    $(function(){
+        $("#btnFilterCategory").click(function () {
+            $("#FormFilterCategory").submit();
+        });
+            
+        
+    });
+</script>

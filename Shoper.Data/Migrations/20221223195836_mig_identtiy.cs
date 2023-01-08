@@ -469,7 +469,7 @@ namespace Shoper.Data.Migrations
                 name: "IX_ProductItemValue_ItemId",
                 table: "ProductItemValue",
                 column: "ItemId",
-                unique: true);
+                unique: false);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductItemValue_ProductId",
