@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.FileProviders;
 using Shoper.BusinessLogic.Interface;
 using Shoper.BusinessLogic.Service;
 using Shoper.BusinessLogic.Utility;
@@ -105,7 +106,12 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
+app.UseStaticFiles(new StaticFileOptions()
+{
+    FileProvider = new PhysicalFileProvider(
+               Path.Combine(Directory.GetCurrentDirectory(), @"./../Shoper.Management/wwwroot/images")),
+    RequestPath = new PathString("/AdminImages")
+});
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();

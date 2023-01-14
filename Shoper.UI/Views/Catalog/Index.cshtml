@@ -1,4 +1,5 @@
 ﻿@using Shoper.BusinessLogic.Interface
+@using Shoper.Entities
 @using X.PagedList
 @using X.PagedList.Mvc.Core
 @using X.PagedList.Web.Common
@@ -11,14 +12,14 @@
        
             <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="ion-arrow-down-b"></i> Sıralama
-            </button>           
+            </button>          
       
         
         <ul class="dropdown-menu">
-            <li class="active"><a href="@Url.Action("Index","Catalog",new{page=ViewBag.page,orderBy=1})" id="OrderNameAsc"> <i class="ion-arrow-down-c"></i> İsim [A-Z]</a></li>
-            <li><a href="@Url.Action("Index","Catalog",new{page=ViewBag.page,orderBy=2})" id="OrderNameDesc"> <i class="ion-arrow-up-c"></i> İsim [Z-A]</a></li>
-            <li><a href="@Url.Action("Index","Catalog",new{page=ViewBag.page,orderBy=3})" id="OrderPriceAsc"> <i class="ion-arrow-down-c"></i> Fiyat [Low-High]</a></li>
-            <li><a href="@Url.Action("Index","Catalog",new{page=ViewBag.page,orderBy=4})" id="OrderPriceDesc"> <i class="ion-arrow-up-c"></i> Fiyat [High-Low]</a></li>
+            <li class="active"><a href="@Url.Action("Index","Catalog",new{page=ViewBag.page,orderBy=1,category=ViewBag.Category,manifacture=ViewBag.Manifacture,min=ViewBag.min,max=ViewBag.max})" id="OrderNameAsc"> <i class="ion-arrow-down-c"></i> İsim [A-Z]</a></li>
+            <li><a href="@Url.Action("Index","Catalog",new{page=ViewBag.page,orderBy=2,category=ViewBag.Category,manifacture=ViewBag.Manifacture,min=ViewBag.min,max=ViewBag.max})" id="OrderNameDesc"> <i class="ion-arrow-up-c"></i> İsim [Z-A]</a></li>
+            <li><a href="@Url.Action("Index","Catalog",new{page=ViewBag.page,orderBy=3,category=ViewBag.Category,manifacture=ViewBag.Manifacture,min=ViewBag.min,max=ViewBag.max})" id="OrderPriceAsc"> <i class="ion-arrow-down-c"></i> Fiyat [Low-High]</a></li>
+            <li><a href="@Url.Action("Index","Catalog",new{page=ViewBag.page,orderBy=4,category=ViewBag.Category,manifacture=ViewBag.Manifacture,min=ViewBag.min,max=ViewBag.max})" id="OrderPriceDesc"> <i class="ion-arrow-up-c"></i> Fiyat [High-Low]</a></li>
         </ul>
     </div>
 
@@ -45,7 +46,9 @@
     </div>
 </div>
 <!-- Filter -->
+
 <div class="col-sm-3 filter">
+    <form asp-action="Index" asp-controller="Catalog" id="FormFilterCategory" method="get">
     <div class="item">
         <div class="title">
             <a href="#clear" data-action="open" class="down"> <i class="ion-android-arrow-dropdown"></i> Aç</a>
@@ -53,25 +56,58 @@
             <h1 class="h4">Kategori</h1>
         </div>
         
-        <div class="controls">
-           <form asp-action="Index" id="FormFilterCategory">
+        <div class="controls">          
             @foreach (var category in _categoryService.GetAll())
             {
                 <div class="checkbox-group" data-status="inactive">
                     <div class="checkbox"><i class="ion-android-done"></i></div>
                         <div class="label" data-value="">@category.CategoryName</div>
-                        <input type="checkbox" name="category[]" id="category[]" value="@category.CategoryId">
+                        <input type="checkbox" name="category" id="category" value="@category.CategoryId">
                 </div>
             }
             <button id="btnFilterCategory">Filtrele</button>
-            </form>
+         
         </div>
           
        
     </div>
-
+    </form>
     <br>
+    <form asp-action="Index" asp-controller="Catalog" id="FormFilterManifacture" method="get">
+        <div class="item">
+            <div class="title">
+                <a href="#clear" data-action="open" class="down"> <i class="ion-android-arrow-dropdown"></i> Aç</a>
 
+                <h1 class="h4">Markalar</h1>
+            </div>
+
+            <div class="controls">
+                @{
+                    IEnumerable<Manifacture> Manifactures;
+                    List<Product> filteredProducts = ViewBag.filteredProducts as List<Product>;
+                    if (filteredProducts!=null){
+                        Manifactures = (from m in _manifactureService.GetAll() join filtered in filteredProducts on m.ManifactureId equals filtered.ManifactureId select m).ToList();
+                    }
+                    else{
+                        Manifactures = _manifactureService.GetAll();
+                    }
+
+                    foreach (var manifacture in Manifactures )
+                    {
+                            <div class="checkbox-group" data-status="inactive">
+                                <div class="checkbox"><i class="ion-android-done"></i></div>
+                                <div class="label" data-value="Hp">@manifacture.ManifactureName</div>
+                                <input type="checkbox" name="manifacture" id="manifacture" value="@manifacture.ManifactureId">
+                            
+                                </div>
+                    }
+                }
+
+                <button id="btnFilterManifacture">Filtrele</button>
+                
+            </div>
+        </div>
+    </form>
     <div class="item">
         <div class="title">
             <a href="#clear" data-action="open" class="down"> <i class="ion-android-arrow-dropdown"></i> Open</a>
@@ -119,43 +155,28 @@
     </div>
 
     <br>
-
+<form asp-action="Index" asp-controller="Catalog" id="FormFilterPrice" method="get">
     <div class="item">
         <div class="title">
             <a href="#clear" data-action="open" class="down"> <i class="ion-android-arrow-dropdown"></i> Open</a>
             <a href="#clear" data-action="clear-price"> <i class="ion-ios-trash-outline"></i> Clear</a>
-            <h1 class="h4">Price</h1>
+            <h1 class="h4">Fiyat</h1>
         </div>
 
         <div class="controls">
             <br>
+           
             <div id="slider-price"></div>
             <br>
             <p id="amount"></p>
+            <input type="hidden" name="min" id="min" />
+            <input type="hidden" name="max" id="max" />
+            <button id="btnFilterPrice">Filtrele</button>
         </div>
     </div>
+ </form>
     <br>
-
-    <div class="item lite">
-        <div class="title">
-            <a href="#clear" data-action="open" class="down"> <i class="ion-android-arrow-dropdown"></i> Aç</a>
-           
-            <h1 class="h4">Markalar</h1>
-        </div>
-
-        <div class="controls">
-            @foreach (var manifacture in _manifactureService.GetAll())
-            {
-                <div class="checkbox-group" data-status="inactive">
-                <div class="checkbox"><i class="ion-android-done"></i></div>
-                <div class="label" data-value="Hp">@manifacture.ManifactureName</div>
-                <input type="checkbox" name="checkbox" value="">
-            </div>
-            }
-            
-
-        </div>
-    </div>
+   
 </div>
 <!-- /// -->
 <!-- Products -->
@@ -166,19 +187,19 @@
         {
             <div class="col-sm-6 col-md-4 product">
                 <a href="#favorites" class="favorites" data-favorite="inactive"><i class="ion-ios-heart-outline"></i></a>
-                <a asp-action="ProductDetail">
+                <a asp-action="ProductDetail" asp-route-id="@product.ProductId">
                     <img src="@(product.ProductImage!=null? "data:image/png;base64,"+Convert.ToBase64String(product.ProductImage.FirstOrDefault().Image):"~/images/no-image.png")" alt="@product.ProductName" />
                 </a>
 
                 <div class="content">
                     <h1 class="h4">@product.ProductName</h1>
                     <p class="price">
-                        @product.ProductPrice.FirstOrDefault(x=>x.isValidFlag==true).Price;
+                        @product.ProductPrice.FirstOrDefault(x=>x.isValidFlag==true).Price
 
                     </p>
                     <label>@product.ProductCategory.CategoryName</label>
 
-                    <a asp-action="ProductDetail" class="btn btn-link"> Detay</a>
+                    <a asp-action="ProductDetail" asp-route-id="@product.ProductId" class="btn btn-link"> Detay</a>
                     <button class="btn btn-primary btn-rounded btn-sm"> <i class="ion-bag"></i> Sepete ekle</button>
                 </div>
             </div>
@@ -189,7 +210,7 @@
 
     <nav>
 
-        @Html.PagedListPager(Model, page => Url.Action("index", new { page = page,pageSize=5,orderBy = ViewBag.orderBy }), new PagedListRenderOptions()
+        @Html.PagedListPager(Model, page => Url.Action("index", new { page = page,pageSize=2,orderBy = ViewBag.orderBy,category=ViewBag.Category,manifacture=ViewBag.Manifacture,min=ViewBag.min,max=ViewBag.max }), new PagedListRenderOptions()
             {
             ActiveLiElementClass = "active",
             PageClasses = new[]{ "page-link"},
@@ -205,12 +226,17 @@
     </nav>
 </div>
 
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <script type="text/javascript">
     $(function(){
         $("#btnFilterCategory").click(function () {
             $("#FormFilterCategory").submit();
+        });
+        $("#btnFilterManifacture").click(function () {
+            $("#FormFilterManifacture").submit();
+        });
+        $("#btnFilterPrice").click(function () {
+            $("#FormFilterPrice").submit();
         });
             
         

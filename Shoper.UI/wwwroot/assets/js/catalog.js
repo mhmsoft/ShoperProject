@@ -1,4 +1,4 @@
-$(document).ready(function(){
+﻿$(document).ready(function(){
 	//Filter
 		$('.filter .item > .controls').on('click', '.checkbox-group', function(){
 			if( $(this).attr('data-status') =='inactive' ){
@@ -37,22 +37,27 @@ $(document).ready(function(){
 				$( ".filter #amount" ).html( $( ".filter #slider-price" ).slider( "values", 0 )  + " $ - " + 
 			  	$( ".filter #slider-price" ).slider( "values", 1 ) + " $" );
 			});
+			
 
 			if( $('.filter').find('#slider-price').length > 0 ){
 				$( ".filter #slider-price" ).slider({
 				  range: true,
-				  min: 99,
-				  max: 1000,
-				  values: [ 199, 700 ],
-				  slide: function( event, ui ) {
-				    $( "#amount" ).html( ui.values[ 0 ] + " $ - " + ui.values[ 1 ] + " $" );
-				  }
+				  min: 1000,
+				  max: 100000,
+				  values: [ 1000, 100000 ],
+					slide: function (event, ui) {
+						$("#min").val(ui.values[0]);
+						$("#max").val(ui.values[1]);
+				    $( "#amount" ).html( ui.values[ 0 ] + " ₺ - " + ui.values[ 1 ] + " ₺" );
+					}
+				
 				});
+				
 			}
 
 			if( $('.filter').find('#slider-price').length > 0 ){
-				$( ".filter #amount" ).html( $( "#slider-price" ).slider( "values", 0 )  + " $ - " + 
-			  		$( "#slider-price" ).slider( "values", 1 ) + " $" );
+				$( ".filter #amount" ).html( $( "#slider-price" ).slider( "values", 0 )  + " ₺ - " + 
+			  		$( "#slider-price" ).slider( "values", 1 ) + " ₺" );
 			}
 		//Slider price
 	//Filter

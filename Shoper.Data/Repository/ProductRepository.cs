@@ -52,7 +52,15 @@ namespace Shoper.Data.Repository
             using (var context = new ShoperContext())
             {
                 var result = context.Products
-                    .Include("ProductCategory").FirstOrDefault(x=>x.ProductId==id);               
+                    .Include(x=>x.ProductCategory)
+                    .ThenInclude(x=>x.ProductItem)
+                    .ThenInclude(x => x.ProductItemValue)
+                    .Include(x=>x.ProductPrice)
+                    .Include(x=>x.ProductImage)
+                    .Include(x=>x.ProductComment)
+                    .Include(x=>x.ProductDiscount)
+                    .Include(x=>x.Manifacture)                    
+                    .FirstOrDefault(x=>x.ProductId==id);               
                 return result;
             }
         }
