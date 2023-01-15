@@ -6,6 +6,7 @@ using Shoper.Data;
 using Shoper.Data.Interface;
 using Shoper.Data.Repository;
 using Shoper.Data.Validator;
+using Shoper.Entities;
 using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);

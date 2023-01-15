@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using MimeKit;
 using Shoper.BusinessLogic.Utility;
 using Shoper.Data;
+using Shoper.Entities;
 using Shoper.UI.Models;
 using Shoper.UI.Models.ViewModels;
 using System.Data;

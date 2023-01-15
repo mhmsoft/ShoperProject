@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Shoper.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;

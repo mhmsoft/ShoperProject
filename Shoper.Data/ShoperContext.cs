@@ -6,10 +6,7 @@ using System.Net.Mail;
 
 namespace Shoper.Data
 {
-    public class AppUser : IdentityUser
-    {
-        public string fullName { get; set; }
-    }
+    
     public class ShoperContext : IdentityDbContext<AppUser>
     {
         public ShoperContext()
