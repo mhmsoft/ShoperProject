@@ -25,9 +25,14 @@ namespace Shoper.Entities
     }
     public enum UnitPrice
     {
+        [Display(Name ="₺")]
         Lira,
+        [Display(Name = "$")]
         Dolar,
-        Euro
+        [Display(Name = "€")]
+        Euro,
+        [Display(Name = "£")]
+        Pound
 
     }
 }

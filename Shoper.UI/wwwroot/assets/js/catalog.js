@@ -111,8 +111,24 @@
 		//Toggle
 
 		//Remove
-			$('.cart').on('click', 'a[href="#remove"]', function(){
-				$(this).parents('.media').fadeOut('300');
+	$('.cart').on('click', 'a[href="#remove"]', function () {
+		var productId = $(this).attr('itemid');
+		$.ajax({
+			type: 'POST',
+			url: '/Catalog/Remove',
+			data: { productId: productId },
+			success: function (response) {
+				if(response)
+					$(this).parents('.media').fadeOut('300');
+				//sayfayı yenile
+				location.reload();
+			}
+
+
+
+		});
+
+				
 			});
 		//Remove
 

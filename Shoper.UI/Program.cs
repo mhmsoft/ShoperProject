@@ -112,6 +112,7 @@ app.UseStaticFiles(new StaticFileOptions()
                Path.Combine(Directory.GetCurrentDirectory(), @"./../Shoper.Management/wwwroot/images")),
     RequestPath = new PathString("/AdminImages")
 });
+app.UseSession();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();

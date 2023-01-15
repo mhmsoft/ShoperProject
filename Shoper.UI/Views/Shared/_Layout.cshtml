@@ -1,7 +1,11 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using Shoper.Data
+@using System.Text.Json
+@using Shoper.UI.Models.ViewModels
+@using Microsoft.AspNetCore.Http
 @inject SignInManager<AppUser> SignInManager
 @inject UserManager<AppUser> UserManager
+@inject IHttpContextAccessor Accessor
 
 <!DOCTYPE html>
 <html lang="en">
@@ -10,7 +14,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title> Catalog &middot; Unistore &middot; Responsive E-Commerce Template</title>
+    <title> Eshoper-Ticaretin Kalbi</title>
 
     <meta name="description" content="">
     <meta name="keywords" content="">
@@ -31,11 +35,83 @@
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 </head>
 <body>
+    @if (Accessor.HttpContext.Session.GetString("Card") != null)    {
+        var cardSession = Accessor.HttpContext.Session.GetString("Card");
+        List<CardItem> card = JsonSerializer.Deserialize<List<CardItem>>(cardSession);
+        @* Html.Partial("_PartialCart", card);*@
+        <div class="cart" data-toggle="inactive">
+            <div class="label">
+                <i class="ion-bag"></i> @card.Count
+            </div>
 
-    @await Html.PartialAsync("_PartialCart")
+            <div class="overlay"></div>
 
+            <div class="window">
+                <div class="title">
+                    <button type="button" class="close"><i class="ion-android-close"></i></button>
+                    <h1 class="h3 info">Ürün Sepeti</h1>
+                </div>
+
+                <div class="content">
+                    @foreach (var item in card)
+                    {
+                        <div class="media">
+                            <div class="media-left">
+                                <a href="#">
+                                    <img class="media-object" src="data:image/png;base64,@Convert.ToBase64String(item.product.ProductImage.FirstOrDefault().Image)" alt="@item.product.ProductName" />
+                                </a>
+                            </div>
+                            <div class="media-body">
+                                <h2 class="h4 media-heading">@item.product.ProductName</h2>
+                                <label>@item.product.ProductCategory.CategoryName</label>
+                                <p class="price">@item.product.ProductPrice.FirstOrDefault(x=>x.isValidFlag==true).UnitPrice  @item.product.ProductPrice.FirstOrDefault(x=>x.isValidFlag==true).Price</p>
+                            </div>
+                            <div class="controls">
+                                <div class="input-group">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default btn-sm" type="button" data-action="minus"><i class="ion-minus-round"></i></button>
+                                    </span>
+                                    <input type="text" class="form-control input-sm" placeholder="Qty" value="@item.quantity" readonly="">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default btn-sm" type="button" data-action="plus"><i class="ion-plus-round"></i></button>
+                                    </span>
+                                </div><!-- /input-group -->
+
+                                <a href="#remove" itemid="@item.product.ProductId" > <i class="ion-trash-b"></i> Sil </a>
+                            </div>
+                        </div>
+                    }
+
+
+
+                </div>
+
+                <div class="checkout container-fluid">
+                    <div class="row">
+                        <div class="col-xs-3 col-sm-2">
+                            <div>
+                                <p>Subtotal:</p>
+                                <h3 class="h4">Total:</h3>
+                            </div>
+                        </div>
+                        <div class="col-xs-3 col-sm-4">
+                            <div class="total">
+                                <p>₺@card.Sum(x=>x.quantity*x.product.ProductPrice.FirstOrDefault(y=>y.isValidFlag==true).Price)</p>
+                                <h3 class="h4">₺@card.Sum(x=>x.quantity*x.product.ProductPrice.FirstOrDefault(y=>y.isValidFlag==true).Price*1.18m)</h3>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-6 col-sm-6">
+                            <a class="btn btn-primary" href="../checkout/"> Checkout order </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
     <nav class="navbar navbar-default">
         <div class="container">
             <div class="navbar-header">
@@ -322,6 +398,44 @@
                 <div class="modal-body">
                 </div>
                 <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="Modal-Comment" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header align-center">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="ion-android-close"></i></span></button>
+                    <h1 class="h4 modal-title">Yorum Ekle</h1>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        <form class="join" asp-action="TakeComment" asp-controller="Catalog" method="post">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <textarea name="comment" id="comment" placeholder="Type here" required="" class="form-control" rows="5"></textarea>
+                                    <br>
+                                </div>
+                                <div class="col-sm-6">
+                                    <input type="text" name="name" id="name" value="" placeholder="Name" required="" class="form-control" />
+                                </div>
+                                <div class="col-sm-6">
+                                    <input type="email" name="email" id="email" value="" placeholder="E-mail" required="" class="form-control" />
+                                    <input type="hidden" name="productId" id="productId" />
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="align-center">
+                                        <br>
+                                        <button type="submit" class="btn btn-primary btn-sm"> <i class="ion-android-send"></i> Gönder </button>
+                                        <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal"> <i class="ion-android-share"></i> No, thanks </button>
+                                        <br><br>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

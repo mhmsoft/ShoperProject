@@ -1,4 +1,5 @@
 ﻿@using Shoper.Entities
+@using Humanizer
 @model Product
 @{
     ViewData["Title"] = "ProductDetail";
@@ -48,7 +49,7 @@
                     <p class="price through">$249.99</p>
                     <br><br>
 
-                    <button class="btn btn-primary btn-rounded"> <i class="ion-bag"></i> Sepete Ekle</button>
+                    <a  class="btn btn-primary btn-rounded" asp-action="AddCard" asp-route-quantity="1" asp-route-productId="@Model.ProductId" > <i class="ion-bag"></i> Sepete Ekle</a>
                 </div>
             </div>
             <br><br><br>
@@ -89,7 +90,11 @@
                             @foreach (var comment in Model.ProductComment)
                             {
                                 <h3>@comment.Writer</h3>
-                                <label>@comment.CommentDate</label>
+                                <label>
+                                         @((comment.CommentDate - DateTime.UtcNow).Value.Humanize())
+                                        
+                                    
+                                    </label>
                                 <p>
                                    @comment.Comment
                                 </p>
@@ -98,7 +103,8 @@
                             </div>
                         </div>
                         <br>
-                        <button class="btn btn-default btn-sm" data-toggle="modal" data-target="#Modal-Comment"> <i class="ion-chatbox-working"></i> Yorum ekle </button>
+                        <button id="btnAddComment" productId="@Model.ProductId" class="btn btn-default btn-sm" data-toggle="modal" data-target="#Modal-Comment"> 
+                            <i class="ion-chatbox-working"></i> Yorum ekle </button>
                     </div>
                     <br><br>
 
@@ -182,4 +188,12 @@
     </section>
     <br>
     <br>
+
+    <script type="text/javascript">
+    $(function(){
+        $("#btnAddComment").click(function () {
+            $("#productId").val($(this).attr("productId"));
+        });
+    });
+    </script>
 

@@ -200,7 +200,7 @@
                     <label>@product.ProductCategory.CategoryName</label>
 
                     <a asp-action="ProductDetail" asp-route-id="@product.ProductId" class="btn btn-link"> Detay</a>
-                    <button class="btn btn-primary btn-rounded btn-sm"> <i class="ion-bag"></i> Sepete ekle</button>
+                    <a asp-action="AddCard" asp-route-productId="@product.ProductId" asp-route-quantity="1" class="btn btn-primary btn-rounded btn-sm"> <i class="ion-bag"></i> Sepete ekle</a>
                 </div>
             </div>
         }
@@ -226,7 +226,7 @@
     </nav>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+
 <script type="text/javascript">
     $(function(){
         $("#btnFilterCategory").click(function () {
