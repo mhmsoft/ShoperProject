@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
-
 using Shoper.BusinessLogic.Interface;
 using Shoper.Entities;
 using Shoper.UI.Models.ViewModels;
@@ -10,21 +9,46 @@ using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using System.Text.Json;
 using X.PagedList;
-
-
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
+using Shoper.BusinessLogic.Utility;
+using MimeKit;
+using NuGet.Protocol.Plugins;
 
 namespace Shoper.UI.Controllers
 {
     public class CatalogController : Controller
     {
         private readonly IProductService _productService;
+        private readonly ICustomerService _customerService;
         private readonly IProductCommentService _productCommentService;
-        public CatalogController(IProductService productService, IProductCommentService productCommentService)
+        private readonly IOrderService _orderService;
+        private readonly IAddressService _addressService;
+        private readonly IOrderDetailService _orderDetailService;
+        private readonly UserManager<AppUser> _userManager;
+        private readonly SignInManager<AppUser> _signInManager;
+        private readonly IMailSender _mailSender;
+        public CatalogController(IProductService productService,
+                                ICustomerService customerService,
+                                IOrderService   orderService,
+                                IAddressService addressService,
+                                IOrderDetailService orderDetailService,
+                                IProductCommentService productCommentService,
+                                UserManager<AppUser> userManager,
+                                SignInManager<AppUser> signInManager,
+                                IMailSender mailSender)
         {
             _productService= productService;
+            _customerService= customerService;
+            _orderService= orderService;
+            _orderDetailService=orderDetailService;
+            _addressService=addressService;
             _productCommentService= productCommentService;
-        }
-        
+            _userManager= userManager;
+            _signInManager= signInManager;
+            _mailSender= mailSender;
+        }        
 
         [HttpGet]
         public IActionResult Index(int? page,int? pageSize,int? orderBy, int[]? category, int[]? manifacture,int? min,int? max)
@@ -115,6 +139,8 @@ namespace Shoper.UI.Controllers
             _productCommentService.Add(productComment);
             return RedirectToAction("ProductDetail", new {id=productId});
         }
+
+        #region Card
         private int isExistInCard(int id)
         {
             var cardSession = HttpContext.Session.GetString("Card");
@@ -124,6 +150,7 @@ namespace Shoper.UI.Controllers
                     return i;
             return -1;
         }
+
         [HttpPost]
         public bool Remove(int productId)
         {
@@ -188,6 +215,166 @@ namespace Shoper.UI.Controllers
             }
             return Redirect(Request.GetTypedHeaders().Referer.ToString());
         }
-        
+        #endregion
+
+        #region Checkout
+       
+        public async Task<IActionResult> Checkout()
+        {
+            if(_signInManager.IsSignedIn(User))
+                {
+                string email = User.Identity.Name;
+                var user = await _userManager.FindByEmailAsync(email);
+                Customer customer = _customerService.GetExp(x => x.UserId == user.Id).FirstOrDefault();
+                return View(customer);
+            }
+               return View();
+
+        }
+        [HttpPost]
+        public async Task<IActionResult> Checkout(string amount, string fullName,string phone,string email,string city,string adres1,string adres2,string selectedAddress)
+        {
+            List<CardItem> card = new List<CardItem>();
+            string Email="";
+            var cardSession = HttpContext.Session.GetString("Card");
+            card = JsonSerializer.Deserialize<List<CardItem>>(cardSession);
+
+            if (_signInManager.IsSignedIn(User)) // login olan müşteri
+            {
+                Email = User.Identity.Name;
+                var user = await _userManager.FindByEmailAsync(Email);
+                Customer customer = _customerService.GetExp(x => x.UserId == user.Id).FirstOrDefault();
+
+
+                if (!string.IsNullOrEmpty(selectedAddress)) // mevcut bir adres seçmişse
+                {
+                    Email = customer.Email;
+                    Order order = new Order()
+                    {
+                        OrderDate = DateTime.Now,
+                        Adres1 = customer.Addresses.FirstOrDefault(x => x.AddressId == Int32.Parse(selectedAddress)).Address1,
+                        Adres2 = customer.Addresses.FirstOrDefault(x => x.AddressId == Int32.Parse(selectedAddress)).Address2,
+                        City = customer.Addresses.FirstOrDefault(x => x.AddressId == Int32.Parse(selectedAddress)).City,
+                        fullName = customer.FirstName + " " + customer.LastName,
+                        mail = Email,
+                        Phone = customer.Phone,
+                        Status = OrderStatus.Preparing,
+                        TotalAmount = float.Parse(amount),
+                        CustomerId = customer.CustomerId
+                    };
+                    var result = _orderService.Add(order); // sipariş kaydedildi
+                    foreach (var item in card)
+                    {
+                        OrderDetail orderDetail = new OrderDetail()
+                        {
+                            OrderId = result.OrderId,
+                            ProductId = item.product.ProductId,
+                            quantity = item.quantity
+
+                        };
+                        _orderDetailService.Add(orderDetail);
+                    }
+
+                }
+                else // yeni bir adres girmişse
+                {
+                    Email = customer.Email;
+                    Order order = new Order()
+                    {
+                        OrderDate = DateTime.Now,
+                        Adres1 = adres1,
+                        Adres2 = adres2,
+                        City = city,
+                        fullName = customer.FirstName + " " + customer.LastName,
+                        mail = Email,
+                        Phone = customer.Phone,
+                        Status = OrderStatus.Preparing,
+                        TotalAmount = float.Parse(amount),
+                        CustomerId = customer.CustomerId
+                    };
+                    Address address = new Address()
+                    {
+                        Address1 = adres1,
+                        Address2 = adres2,
+                        AddressTitle = "",
+                        CustomerId = customer.CustomerId,
+                        City = city
+                    };
+                    _addressService.Add(address);
+                    var result = _orderService.Add(order); // sipariş kaydedildi
+                    foreach (var item in card)
+                    {
+                        OrderDetail orderDetail = new OrderDetail()
+                        {
+                            OrderId = result.OrderId,
+                            ProductId = item.product.ProductId,
+                            quantity = item.quantity
+
+                        };
+                        _orderDetailService.Add(orderDetail);
+                    }
+                }
+            }
+            else // login olmayan müşteri
+            {
+                Email = email;
+                Customer customer = new Customer()
+                {
+                    Email = Email,
+                    FirstName =fullName,
+                    LastName = "",
+                    Phone = phone
+                };
+                if (_customerService.GetExp(x => x.Email == Email).FirstOrDefault() == null)
+                {
+                    var customerResult = _customerService.Add(customer); //login olmayan müşteri ekleniyor
+                    Address address = new Address()
+                    {
+                        Address1 = adres1,
+                        Address2 = adres2,
+                        AddressTitle = "Ev",
+                        City = city,
+                        CustomerId = customerResult.CustomerId
+                    };
+                    _addressService.Add(address); // login olmayan müşterin adresi ekleniyor
+                    Order order = new Order()
+                    {
+                        OrderDate = DateTime.Now,
+                        Adres1 = adres1,
+                        Adres2 = adres2,
+                        City = city,
+                        fullName = fullName,
+                        mail = Email,
+                        Phone = phone,
+                        Status = OrderStatus.Preparing,
+                        TotalAmount = float.Parse(amount),
+                        CustomerId = customerResult.CustomerId
+                    };
+                    var result = _orderService.Add(order); // sipariş kaydedildi
+                    foreach (var item in card)
+                    {
+                        OrderDetail orderDetail = new OrderDetail()
+                        {
+                            OrderId = result.OrderId,
+                            ProductId = item.product.ProductId,
+                            quantity = item.quantity
+
+                        };
+                        _orderDetailService.Add(orderDetail);
+                    }
+                }
+            }
+            var emailResult = await _mailSender.MailSend(new Email()
+            {
+                Subject = "Sipraşiniz olşturuldu",
+                Body = $"Siparişinizi aldık.",
+                To = InternetAddress.Parse(Email)
+            });
+            HttpContext.Session.Remove("Card"); // sepet Session siliniyor
+
+            return View();
+        }
+        #endregion
+
     }
 }

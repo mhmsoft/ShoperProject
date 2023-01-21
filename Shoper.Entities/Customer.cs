@@ -25,10 +25,10 @@ namespace Shoper.Entities
         [DataType(DataType.PhoneNumber)]
         public string Phone { get; set; }
 
-        public int? UserId { get; set; }
+        public string? UserId { get; set; }
 
         public ICollection<Address> Addresses { get; set; }
         public ICollection<Order> Orders { get; set; }
-
+        public  AppUser User { get; set; }
     }
 }

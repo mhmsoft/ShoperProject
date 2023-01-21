@@ -1,0 +1,288 @@
+﻿
+@using Shoper.Entities
+@using System.Text.Json
+@using Shoper.UI.Models.ViewModels
+@inject IHttpContextAccessor Accessor
+
+@model Customer
+@{
+    ViewData["Title"] = "Checkout";
+    bool isAuthenticated = false;
+}
+<form asp-action="Checkout" id="formCheckout">
+    
+<div class="col-md-8">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="checkout">
+                <div class="addresses box-select">
+                    <h2> 1. Teslimat adresi</h2>
+                    <hr class="offset-sm">
+                    @if(Model!=null){
+                        if(Model.Addresses!=null){
+                        @foreach (var item in Model.Addresses)
+                        {
+                            <address class="box-default sm-padding" data-style="selected">
+                                <hr class="offset-sm">
+                                <h3 class="no-margin"><i class="ion-ios-person"></i> @item.AddressTitle</h3>
+                                <p>
+                                    <i class="ion-ios-location"></i> @item.Address1 , @item.Address2, @item.City
+                                </p>
+                                <input type="hidden" id="addressId" name="addressId" value="@item.AddressId"/>
+                                <div class="check">
+                                    <i class="ion-checkmark-round"></i>
+                                </div>
+                                <hr class="offset-sm">
+                             </address>
+                        }
+                   
+                        }
+                      
+
+                    }
+
+                    <input type="hidden" id="selectedAddress" name="selectedAddress" />
+                    <hr class="offset-sm">
+                    <a href="#addaddress" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                        Yeni adres Ekle
+                    </a>
+                    <hr class="offset-sm">
+                   
+                        <div class="collapse" id="collapseExample">
+                        <div class="panel panel-default">
+                            <div class="panel-body">                              
+
+                                <hr class="offset-sm">
+                                <div class="row">
+                                        <div class="col-sm-4">
+                                            <p>İsim</p>
+                                            <input type="text" class="form-control input-sm" name="fullName" value=""  placeholder="Ad" />
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <p>Telefon</p>
+                                            <input type="text" class="form-control input-sm" name="phone" value=""  placeholder="Telefon" />
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <p>Eposta</p>
+                                            <input type="text" class="form-control input-sm" name="email" value=""  placeholder="Eposta" />
+                                        </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <p>Şehir</p>
+                                        <input type="text" class="form-control input-sm" name="city" value=""  placeholder="" />
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <hr class="offset-sm visible-xs">
+                                        <p>Adres1</p>
+                                        <input type="text" class="form-control input-sm" name="adres1" value=""  placeholder="" />
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <hr class="offset-sm visible-xs">
+                                        <p>Adres2</p>
+                                        <input type="text" class="form-control input-sm" name="adres2" value=""  placeholder="" />
+                                    </div>
+                              
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                   
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" value="">
+                            Use as billing address
+                        </label>
+                    </div>
+
+                    <hr class="offset-sm">
+                    <hr>
+                </div>
+
+                <div class="delivery box-select">
+                    <h2> 2. Delevery option </h2>
+                    <hr class="offset-sm">
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="box-default sm-padding" data-style="selected">
+                                <hr class="offset-sm">
+                                <img src="../assets/img/shipping/fedex.jpg" title="fedex" alt="fedex" />
+                                <span>&nbsp;&nbsp;2-3 working days</span>
+                                <div class="check">
+                                    <i class="ion-checkmark-round"></i>
+                                </div>
+                                <hr class="offset-sm">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="box-default sm-padding">
+                                <hr class="offset-sm">
+                                <img src="../assets/img/shipping/dhl.jpg" title="dhl" alt="dhl" />
+                                <span>&nbsp;&nbsp;5-10 working days</span>
+                                <div class="check">
+                                    <i class="ion-checkmark-round"></i>
+                                </div>
+                                <hr class="offset-sm">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="box-default sm-padding">
+                                <hr class="offset-sm">
+                                <img src="../assets/img/shipping/ems.jpg" title="ems" alt="ems" />
+                                <span>&nbsp;&nbsp;5-10 working days</span>
+                                <div class="check">
+                                    <i class="ion-checkmark-round"></i>
+                                </div>
+                                <hr class="offset-sm">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="box-default sm-padding">
+                                <hr class="offset-sm">
+                                <img src="../assets/img/shipping/ups.jpg" title="ups" alt="ups" />
+                                <span>&nbsp;&nbsp;12-14 working days</span>
+                                <div class="check">
+                                    <i class="ion-checkmark-round"></i>
+                                </div>
+                                <hr class="offset-sm">
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <hr class="offset-sm">
+                    <hr>
+                </div>
+
+                <div class="payment box-select">
+                    <h2> 3. Payment </h2>
+                    <hr class="offset-sm">
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="box-default sm-padding" data-style="selected">
+                                <hr class="offset-sm">
+                                <img src="../assets/img/payments/paypal.jpg" title="paypal" alt="paypal" />
+                                <span>&nbsp;&nbsp;0% Service fee</span>
+                                <div class="check">
+                                    <i class="ion-checkmark-round"></i>
+                                </div>
+                                <hr class="offset-sm">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="box-default sm-padding">
+                                <hr class="offset-sm">
+                                <img src="../assets/img/payments/stripe.jpg" title="stripe" alt="stripe" />
+                                <span>&nbsp;&nbsp;1% Service fee</span>
+                                <div class="check">
+                                    <i class="ion-checkmark-round"></i>
+                                </div>
+                                <hr class="offset-sm">
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <hr class="offset-sm">
+                    <hr>
+                </div>
+
+                <div class="payment box-select">
+                    <h2> 4. Remark </h2>
+                    <hr class="offset-sm">
+
+                    <textarea name="remark" class="form-control" placeholder="Please, type remark" rows="5"></textarea>
+                    <hr class="offset-sm">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@if (Accessor.HttpContext.Session.GetString("Card") != null)
+{
+        var cardSession = Accessor.HttpContext.Session.GetString("Card");
+        List<CardItem> card = JsonSerializer.Deserialize<List<CardItem>>(cardSession);
+        <div class="col-sm-8 col-md-4">
+            <hr class="offset-sm visible-sm">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h2 class="no-margin">Özet</h2>
+                    <hr class="offset-md">
+
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <p>Tutar (@card.Count adet)</p>
+                                <p>İndirim</p>
+                                <p>Teslimat</p>
+                                <p>KDV</p>
+                            </div>
+                            <div class="col-xs-6">
+                                <p><b>₺@card.Sum(x=>x.quantity*x.product.ProductPrice.FirstOrDefault(y=>y.isValidFlag==true).Price)</b></p>
+                                <p><b>0</b></p>
+                                <p><b>0</b></p>
+                                <p><b>₺@card.Sum(x=>x.quantity*x.product.ProductPrice.FirstOrDefault(y=>y.isValidFlag==true).Price*0.18m)</b></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="checkboxes">
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked>
+                                Promosyon Kodu
+                            </label>
+                            <hr class="offset-xs">
+
+                            <div class="input-group">
+                                <input type="text" class="form-control input-sm" placeholder="Kod">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-primary btn-sm" type="button">Apply</button>
+                                </span>
+                            </div><!-- /input-group -->
+                            <hr class="offset-sm">
+                        </div>
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
+                                Kupon
+                            </label>
+                        </div>
+                    </div>
+                    <hr>
+
+                    <div class="container-fluid">
+
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <h3 class="no-margin">Toplam Tutar</h3>
+                            </div>
+                            <div class="col-xs-6">
+                                <h3 class="no-margin">₺@card.Sum(x=>x.quantity*x.product.ProductPrice.FirstOrDefault(y=>y.isValidFlag==true).Price*1.18m)</h3>
+                                <input type="hidden" name="amount" id="amount" value="@card.Sum(x=>x.quantity*x.product.ProductPrice.FirstOrDefault(y=>y.isValidFlag==true).Price*1.18m)" />
+                            </div>
+                        </div>
+
+                    </div>
+                    <hr class="offset-md">
+
+                    <button id="btnConfirm" class="btn btn-primary btn-lg justify"><i class="ion-compose"></i>&nbsp;&nbsp; Siparişi Onayla</button>
+                </div>
+            </div>
+        </div>
+}
+</form>
+
+<script type="text/javascript">
+    $(function () {
+        $("#btnConfirm").click(function () {           
+        }
+            var selectedAddressId=$("address[data-style=selected]").find("input").val();
+            $("#formCheckout").find("selectedAddress").val(selectedAddressId);
+            $("#formCheckout").submit();
+        });
+    });
+  
+</script>

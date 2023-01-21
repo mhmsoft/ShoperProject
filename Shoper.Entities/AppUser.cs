@@ -10,5 +10,7 @@ namespace Shoper.Entities
     public class AppUser : IdentityUser
     {
         public string fullName { get; set; }
+
+        public Customer Customer { get; set; }
     }
 }

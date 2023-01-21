@@ -140,6 +140,11 @@ namespace Shoper.Data
               .HasForeignKey(pp => pp.ProductId)
               .HasConstraintName("Fk_OrderDetailToProduct");
 
+            modelBuilder.Entity<Customer>()
+                .HasOne<AppUser>(x => x.User)
+                .WithOne(y => y.Customer)
+                .HasForeignKey<Customer>(t => t.UserId);
+
             base.OnModelCreating(modelBuilder);// identity tablolarını oluşturmak için
         }
     }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MimeKit;
+using Shoper.BusinessLogic.Interface;
 using Shoper.BusinessLogic.Utility;
 using Shoper.Data;
 using Shoper.Entities;
@@ -15,19 +16,23 @@ namespace Shoper.UI.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly ICustomerService _customerService;
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IMailSender _mailSender;
 
         public HomeController(ILogger<HomeController> logger,
+                                     ICustomerService customerService,
                                     UserManager<AppUser> userManager,
                                     SignInManager<AppUser> signInManager,
                                     IMailSender mailSender)
         {
             _logger = logger;
+            _customerService = customerService;
             _userManager = userManager;
             _signInManager = signInManager;
             _mailSender = mailSender;
+
         }
 
        
@@ -158,6 +163,18 @@ namespace Shoper.UI.Controllers
                 var result = await _userManager.ConfirmEmailAsync(user, token);
                 if (result.Succeeded)
                 {
+                    if (_customerService.GetExp(x => x.Email == user.Email).Count() == 0)
+                    {
+                        Customer customer = new Customer()
+                        {
+                            Email = user.Email,
+                            FirstName = user.fullName,
+                            UserId = user.Id
+                        };
+                        _customerService.Add(customer);
+                    }
+                    
+
                     return RedirectToAction("Login");
                 }
                 ModelState.AddModelError(string.Empty, "Kullanıcı doğrulaması yapılamadı.");
