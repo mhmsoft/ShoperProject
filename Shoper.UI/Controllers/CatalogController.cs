@@ -15,6 +15,7 @@ using Microsoft.IdentityModel.Tokens;
 using Shoper.BusinessLogic.Utility;
 using MimeKit;
 using NuGet.Protocol.Plugins;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Shoper.UI.Controllers
 {
@@ -234,144 +235,200 @@ namespace Shoper.UI.Controllers
         [HttpPost]
         public async Task<IActionResult> Checkout(string amount, string fullName,string phone,string email,string city,string adres1,string adres2,string selectedAddress)
         {
-            List<CardItem> card = new List<CardItem>();
-            string Email="";
-            var cardSession = HttpContext.Session.GetString("Card");
-            card = JsonSerializer.Deserialize<List<CardItem>>(cardSession);
-
-            if (_signInManager.IsSignedIn(User)) // login olan müşteri
+            try
             {
-                Email = User.Identity.Name;
-                var user = await _userManager.FindByEmailAsync(Email);
-                Customer customer = _customerService.GetExp(x => x.UserId == user.Id).FirstOrDefault();
+                List<CardItem> card = new List<CardItem>();
+                string Email = "";
+                var cardSession = HttpContext.Session.GetString("Card");
+                card = JsonSerializer.Deserialize<List<CardItem>>(cardSession);
 
-
-                if (!string.IsNullOrEmpty(selectedAddress)) // mevcut bir adres seçmişse
+                if (_signInManager.IsSignedIn(User)) // login olan müşteri
                 {
-                    Email = customer.Email;
-                    Order order = new Order()
+                    Email = User.Identity.Name;
+                    var user = await _userManager.FindByEmailAsync(Email);
+                    Customer customer = _customerService.GetExp(x => x.UserId == user.Id).FirstOrDefault();
+
+
+                    if (!string.IsNullOrEmpty(selectedAddress)) // mevcut bir adres seçmişse
                     {
-                        OrderDate = DateTime.Now,
-                        Adres1 = customer.Addresses.FirstOrDefault(x => x.AddressId == Int32.Parse(selectedAddress)).Address1,
-                        Adres2 = customer.Addresses.FirstOrDefault(x => x.AddressId == Int32.Parse(selectedAddress)).Address2,
-                        City = customer.Addresses.FirstOrDefault(x => x.AddressId == Int32.Parse(selectedAddress)).City,
-                        fullName = customer.FirstName + " " + customer.LastName,
-                        mail = Email,
-                        Phone = customer.Phone,
-                        Status = OrderStatus.Preparing,
-                        TotalAmount = float.Parse(amount),
-                        CustomerId = customer.CustomerId
-                    };
-                    var result = _orderService.Add(order); // sipariş kaydedildi
-                    foreach (var item in card)
-                    {
-                        OrderDetail orderDetail = new OrderDetail()
+                        Email = customer.Email;
+                        Order order = new Order()
                         {
-                            OrderId = result.OrderId,
-                            ProductId = item.product.ProductId,
-                            quantity = item.quantity
-
+                            OrderDate = DateTime.Now,
+                            Adres1 = customer.Addresses.FirstOrDefault(x => x.AddressId == Int32.Parse(selectedAddress)).Address1,
+                            Adres2 = customer.Addresses.FirstOrDefault(x => x.AddressId == Int32.Parse(selectedAddress)).Address2,
+                            City = customer.Addresses.FirstOrDefault(x => x.AddressId == Int32.Parse(selectedAddress)).City,
+                            fullName = customer.FirstName + " " + customer.LastName,
+                            mail = Email,
+                            Phone = customer.Phone,
+                            Status = OrderStatus.Preparing,
+                            TotalAmount = float.Parse(amount),
+                            CustomerId = customer.CustomerId
                         };
-                        _orderDetailService.Add(orderDetail);
-                    }
+                        order.isActive = true;
+                        order.isVerified = false;
+                        var result = _orderService.Add(order); // sipariş kaydedildi
+                        foreach (var item in card)
+                        {
+                            // stock kontrolü
+                            if (_productService.Get(item.product.ProductId).ProductStock < item.quantity)
+                            {
+                                _orderService.Delete(result);
+                                throw new Exception("Yeteri miktarda ürün olmadığından siparişiniz alınamamıştır.");
+                                
+                            }
+                            else
+                            {
 
+                                OrderDetail orderDetail = new OrderDetail()
+                                {
+                                    OrderId = result.OrderId,
+                                    ProductId = item.product.ProductId,
+                                    quantity = item.quantity
+                                };
+                                var OrderedProduct = _productService.Get(item.product.ProductId);
+                                OrderedProduct.ProductStock -= item.quantity;
+                                _productService.Update(OrderedProduct);
+                                _orderDetailService.Add(orderDetail);
+                            }
+                        }
+                    }
+                    else // yeni bir adres girmişse
+                    {
+                        Email = customer.Email;
+                        Order order = new Order()
+                        {
+                            OrderDate = DateTime.Now,
+                            Adres1 = adres1,
+                            Adres2 = adres2,
+                            City = city,
+                            fullName = customer.FirstName + " " + customer.LastName,
+                            mail = Email,
+                            Phone = customer.Phone,
+                            Status = OrderStatus.Preparing,
+                            TotalAmount = float.Parse(amount),
+                            CustomerId = customer.CustomerId
+                        };
+                        Address address = new Address()
+                        {
+                            Address1 = adres1,
+                            Address2 = adres2,
+                            AddressTitle = "",
+                            CustomerId = customer.CustomerId,
+                            City = city
+                        };
+                        _addressService.Add(address);
+                        order.isActive = true;
+                        order.isVerified = false;
+                        var result = _orderService.Add(order); // sipariş kaydedildi
+
+                        foreach (var item in card)
+                        {
+                            // stock kontrolü
+                            if (_productService.Get(item.product.ProductId).ProductStock < item.quantity)
+                            {
+                                _orderService.Delete(result);
+                                throw new Exception("Yeteri miktarda ürün olmadığından siparişiniz alınamamıştır.");
+
+                            }
+                            else
+                            {
+                                OrderDetail orderDetail = new OrderDetail()
+                                {
+                                    OrderId = result.OrderId,
+                                    ProductId = item.product.ProductId,
+                                    quantity = item.quantity
+
+                                };
+                                var OrderedProduct = _productService.Get(item.product.ProductId);
+                                OrderedProduct.ProductStock -= item.quantity;
+                                _productService.Update(OrderedProduct);
+                                _orderDetailService.Add(orderDetail);
+                            }
+                           
+                        }
+                    }
                 }
-                else // yeni bir adres girmişse
+                else // login olmayan müşteri
                 {
-                    Email = customer.Email;
-                    Order order = new Order()
+                    Email = email;
+                    Customer customer = new Customer()
                     {
-                        OrderDate = DateTime.Now,
-                        Adres1 = adres1,
-                        Adres2 = adres2,
-                        City = city,
-                        fullName = customer.FirstName + " " + customer.LastName,
-                        mail = Email,
-                        Phone = customer.Phone,
-                        Status = OrderStatus.Preparing,
-                        TotalAmount = float.Parse(amount),
-                        CustomerId = customer.CustomerId
+                        Email = Email,
+                        FirstName = fullName,
+                        LastName = "",
+                        Phone = phone
                     };
-                    Address address = new Address()
+                    if (_customerService.GetExp(x => x.Email == Email).FirstOrDefault() == null)
                     {
-                        Address1 = adres1,
-                        Address2 = adres2,
-                        AddressTitle = "",
-                        CustomerId = customer.CustomerId,
-                        City = city
-                    };
-                    _addressService.Add(address);
-                    var result = _orderService.Add(order); // sipariş kaydedildi
-                    foreach (var item in card)
-                    {
-                        OrderDetail orderDetail = new OrderDetail()
+                        var customerResult = _customerService.Add(customer); //login olmayan müşteri ekleniyor
+                        Address address = new Address()
                         {
-                            OrderId = result.OrderId,
-                            ProductId = item.product.ProductId,
-                            quantity = item.quantity
-
+                            Address1 = adres1,
+                            Address2 = adres2,
+                            AddressTitle = "Ev",
+                            City = city,
+                            CustomerId = customerResult.CustomerId
                         };
-                        _orderDetailService.Add(orderDetail);
+                        _addressService.Add(address); // login olmayan müşterin adresi ekleniyor
+                        Order order = new Order()
+                        {
+                            OrderDate = DateTime.Now,
+                            Adres1 = adres1,
+                            Adres2 = adres2,
+                            City = city,
+                            fullName = fullName,
+                            mail = Email,
+                            Phone = phone,
+                            Status = OrderStatus.Preparing,
+                            TotalAmount = float.Parse(amount),
+                            CustomerId = customerResult.CustomerId
+                        };
+                        order.isActive = true;
+                        order.isVerified = false;
+                        var result = _orderService.Add(order); // sipariş kaydedildi
+                        foreach (var item in card)
+                        {
+                            // stock kontrolü
+                            if (_productService.Get(item.product.ProductId).ProductStock < item.quantity)
+                            {
+                                _orderService.Delete(result);
+                                throw new Exception("Yeteri miktarda ürün olmadığından siparişiniz alınamamıştır.");
+
+                            }
+                            else
+                            {
+                                OrderDetail orderDetail = new OrderDetail()
+                                {
+                                    OrderId = result.OrderId,
+                                    ProductId = item.product.ProductId,
+                                    quantity = item.quantity
+
+                                };
+                                var OrderedProduct = _productService.Get(item.product.ProductId);
+                                OrderedProduct.ProductStock -= item.quantity;
+                                _productService.Update(OrderedProduct);
+                                _orderDetailService.Add(orderDetail);
+                            }
+
+                        }
                     }
                 }
+                var emailResult = await _mailSender.MailSend(new Email()
+                {
+                    Subject = "Sipraşiniz olşturuldu",
+                    Body = $"Siparişinizi aldık.",
+                    To = InternetAddress.Parse(Email)
+                });
+                HttpContext.Session.Remove("Card"); // sepet Session siliniyor
+
             }
-            else // login olmayan müşteri
+            catch (Exception ex)
             {
-                Email = email;
-                Customer customer = new Customer()
-                {
-                    Email = Email,
-                    FirstName =fullName,
-                    LastName = "",
-                    Phone = phone
-                };
-                if (_customerService.GetExp(x => x.Email == Email).FirstOrDefault() == null)
-                {
-                    var customerResult = _customerService.Add(customer); //login olmayan müşteri ekleniyor
-                    Address address = new Address()
-                    {
-                        Address1 = adres1,
-                        Address2 = adres2,
-                        AddressTitle = "Ev",
-                        City = city,
-                        CustomerId = customerResult.CustomerId
-                    };
-                    _addressService.Add(address); // login olmayan müşterin adresi ekleniyor
-                    Order order = new Order()
-                    {
-                        OrderDate = DateTime.Now,
-                        Adres1 = adres1,
-                        Adres2 = adres2,
-                        City = city,
-                        fullName = fullName,
-                        mail = Email,
-                        Phone = phone,
-                        Status = OrderStatus.Preparing,
-                        TotalAmount = float.Parse(amount),
-                        CustomerId = customerResult.CustomerId
-                    };
-                    var result = _orderService.Add(order); // sipariş kaydedildi
-                    foreach (var item in card)
-                    {
-                        OrderDetail orderDetail = new OrderDetail()
-                        {
-                            OrderId = result.OrderId,
-                            ProductId = item.product.ProductId,
-                            quantity = item.quantity
-
-                        };
-                        _orderDetailService.Add(orderDetail);
-                    }
-                }
+                ModelState.AddModelError("error", ex.Message);
+                throw;
             }
-            var emailResult = await _mailSender.MailSend(new Email()
-            {
-                Subject = "Sipraşiniz olşturuldu",
-                Body = $"Siparişinizi aldık.",
-                To = InternetAddress.Parse(Email)
-            });
-            HttpContext.Session.Remove("Card"); // sepet Session siliniyor
-
+           
             return View();
         }
         #endregion

@@ -1,4 +1,5 @@
-﻿using Shoper.Data.Interface;
+﻿using Microsoft.EntityFrameworkCore;
+using Shoper.Data.Interface;
 using Shoper.Entities;
 using System;
 using System.Collections.Generic;
@@ -53,7 +54,11 @@ namespace Shoper.Data.Repository
         {
             using (var context = new ShoperContext())
             {
-                var result = context.OrderDetails.Where(predicate).ToList();
+                var result = context.OrderDetails
+                    .Include(x=>x.Product)
+                    .ThenInclude(y=>y.ProductPrice)
+                    .Include(y=>y.Product.ProductImage)
+                    .Where(predicate).ToList();
                 return result;
             }
         }

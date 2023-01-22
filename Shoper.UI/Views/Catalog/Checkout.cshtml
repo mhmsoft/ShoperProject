@@ -200,6 +200,7 @@
         </div>
     </div>
 </div>
+    @Html.ValidationMessage("error")
 @if (Accessor.HttpContext.Session.GetString("Card") != null)
 {
         var cardSession = Accessor.HttpContext.Session.GetString("Card");
@@ -277,10 +278,10 @@
 
 <script type="text/javascript">
     $(function () {
-        $("#btnConfirm").click(function () {           
-        }
-            var selectedAddressId=$("address[data-style=selected]").find("input").val();
-            $("#formCheckout").find("selectedAddress").val(selectedAddressId);
+        $("#btnConfirm").click(function () {         
+        
+            var selectedAddressId=$("address[data-style=selected]").find("input").val();           
+            $("#formCheckout").find("#selectedAddress").val(selectedAddressId);
             $("#formCheckout").submit();
         });
     });

@@ -37,8 +37,7 @@
     <!-- Preloader - style you can find in spinners.css -->
     <!-- ============================================================== -->
     
-    @await Html.PartialAsync("_PartialCart")
-
+    
    
     <!-- ============================================================== -->
     <!-- Main wrapper - style you can find in pages.scss -->
@@ -166,17 +165,17 @@
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a class="sidebar-link waves-effect waves-dark sidebar-link" href="map-google.html"
+                            <a asp-action="Index" asp-controller="Customer" class="sidebar-link waves-effect waves-dark sidebar-link" 
                                aria-expanded="false">
-                                <i class="fa fa-globe" aria-hidden="true"></i>
-                                <span class="hide-menu">Google Map</span>
+                                <i class="fas fa-users" aria-hidden="true"></i>
+                                <span class="hide-menu">Müşteriler</span>
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a class="sidebar-link waves-effect waves-dark sidebar-link" href="blank.html"
+                            <a asp-action="Index" asp-controller="Order" class="sidebar-link waves-effect waves-dark sidebar-link" 
                                aria-expanded="false">
-                                <i class="fa fa-columns" aria-hidden="true"></i>
-                                <span class="hide-menu">Blank Page</span>
+                                <i class="fab fa-first-order" aria-hidden="true"></i>
+                                <span class="hide-menu">Siparişler</span>
                             </a>
                         </li>
                         <li class="sidebar-item">

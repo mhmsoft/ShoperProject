@@ -36,7 +36,7 @@ namespace Shoper.Data.Repository
         {
             using (var context = new ShoperContext())
             {
-                var result = context.Customers.Include(x=>x.Addresses).ToList();                
+                var result = context.Customers.ToList();                
                 return result;
             }
         }

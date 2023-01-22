@@ -110,7 +110,7 @@ namespace Shoper.UI.Controllers
 
             return View(model);
         }
-        public IActionResult Login()
+        public IActionResult Login(string ReturnUrl = null)
         {
             return View();
         }

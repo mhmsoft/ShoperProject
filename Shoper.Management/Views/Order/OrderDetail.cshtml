@@ -1,0 +1,74 @@
+﻿@model IEnumerable<Shoper.Entities.OrderDetail>
+
+@{
+    ViewData["Title"] = "OrderDetail";
+}
+
+<h1>Sipariş Detayı</h1>
+
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.OrderDetailId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OrderId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Product.ProductImage)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Product.ProductName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Product.ProductPrice)
+            </th>
+            
+            <th>
+                @Html.DisplayNameFor(model => model.quantity)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.OrderDetailId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OrderId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductId)
+            </td>
+               <td>
+                    @if (item.Product.ProductImage != null)
+                    {
+                        <img src="data:image/png;base64,@Convert.ToBase64String(item.Product.ProductImage.FirstOrDefault().Image)" style="margin:5px;height:50px;width:70px;" />
+                    }
+                    else
+                    {
+                        <img src="~/images/no-image.png" style="margin:5px;height:50px;width:70px;" />
+                    }
+                </td>
+             <td>
+                    @Html.DisplayFor(modelItem => item.Product.ProductName)
+             </td>
+             <td>
+                    @Html.DisplayFor(modelItem => item.Product.ProductPrice.FirstOrDefault(x=>x.isValidFlag==true).Price)
+             </td>
+            
+            <td>
+                @Html.DisplayFor(modelItem => item.quantity)
+            </td>
+           
+        </tr>
+}
+    </tbody>
+</table>
