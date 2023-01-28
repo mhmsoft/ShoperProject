@@ -26,6 +26,7 @@ namespace Shoper.Data
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
+        public DbSet<Slider> Sliders { get; set; }
 
 
 
@@ -52,7 +53,7 @@ namespace Shoper.Data
             modelBuilder.Entity<Customer>().ToTable("Customer").HasKey(a => a.CustomerId);
             modelBuilder.Entity<Order>().ToTable("Order").HasKey(a => a.OrderId);
             modelBuilder.Entity<OrderDetail>().ToTable("OrderDetail").HasKey(a => a.OrderDetailId);
-
+            modelBuilder.Entity<Slider>().ToTable("Slider").HasKey(a => a.sliderId);
 
             modelBuilder.Entity<ProductItemValue>().Property(d => d.ItemValueId).UseIdentityColumn(1,1);
             modelBuilder.Entity<Order>().Property(d => d.OrderId).UseIdentityColumn(100, 1);
@@ -144,6 +145,12 @@ namespace Shoper.Data
                 .HasOne<AppUser>(x => x.User)
                 .WithOne(y => y.Customer)
                 .HasForeignKey<Customer>(t => t.UserId);
+
+            modelBuilder.Entity<Slider>()
+               .HasOne<Category>(x => x.Category)
+               .WithMany(y => y.Slider)
+               .HasForeignKey(t => t.categoryId)
+               .HasConstraintName("Fk_SliderToCategory"); ;
 
             base.OnModelCreating(modelBuilder);// identity tablolarını oluşturmak için
         }

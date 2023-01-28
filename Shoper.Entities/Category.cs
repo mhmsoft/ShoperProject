@@ -14,5 +14,6 @@ namespace Shoper.Entities
         public string? CategoryImagePath { get; set; }
         public ICollection<Product> Products { get; set; }
         public ICollection<ProductItem> ProductItem { get; set; }
+        public ICollection<Slider> Slider { get; set; }
     }
 }

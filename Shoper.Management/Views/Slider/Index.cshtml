@@ -1,0 +1,87 @@
+﻿@model IEnumerable<Shoper.Entities.Slider>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h3>Slider</h3>
+
+<p>
+    <a asp-action="Create">Yeni Slider</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.sliderId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.sliderImage)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.desc)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.categoryId)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr id="@item.sliderId">
+            <td>
+                @Html.DisplayFor(modelItem => item.sliderId)
+            </td>
+            <td>
+                    @if (item!= null)
+                    {
+                        <img src="data:image/png;base64,@Convert.ToBase64String(item.sliderImage)" style="margin:5px;height:50px;width:70px;" />
+                    }
+                    else
+                    {
+                        <img src="~/images/no-image.png" style="margin:5px;height:50px;width:70px;" />
+                    }
+               
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.desc)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.categoryId)
+            </td>
+            <td>
+                @Html.ActionLink("Düzenle", "Edit", new { id=item.sliderId }) |
+
+               <a class="btn btn-danger text-white" href="javascript:void(0);" data-id="@item.sliderId" id="sil">Sil</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+<script type="text/javascript">
+    $(document).on('click', '#sil', function () {
+        var response = confirm('Bu ürün ve ona ait tüm bilgiler siliencektir.Emin misiniz?');
+        var id = $(this).attr("data-id");
+        if (response == true) {
+            $.ajax({
+                url: "@Url.Action("Delete")",
+                data: { id: id },
+                type: "POST",
+                success: function (data) {
+                    if(data){
+                        $("tr#" + id).remove();
+                    }
+                        
+                }
+            });
+        }
+
+    });
+</script>

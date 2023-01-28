@@ -20,25 +20,29 @@ namespace Shoper.UI.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IMailSender _mailSender;
+        private readonly ISliderService _sliderService;
 
         public HomeController(ILogger<HomeController> logger,
                                      ICustomerService customerService,
                                     UserManager<AppUser> userManager,
                                     SignInManager<AppUser> signInManager,
-                                    IMailSender mailSender)
+                                    IMailSender mailSender,
+                                    ISliderService sliderService
+                             )
         {
             _logger = logger;
             _customerService = customerService;
             _userManager = userManager;
             _signInManager = signInManager;
             _mailSender = mailSender;
+            _sliderService = sliderService;
 
         }
 
        
         public IActionResult Index()
         {
-            return View();
+            return View(_sliderService.GetAll()) ;
         }             
 
        
