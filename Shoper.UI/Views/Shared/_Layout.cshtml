@@ -140,8 +140,20 @@
                     }
                     else //login olmuşa
                     {
-                        <li><a href="@Url.Action("Login", "Home")"> <i class="ion-android-person"></i>@User.Identity.Name</a></li>
-                        <li><a href="@Url.Action("LogOut", "Home")">Çıkış</a></li>
+                       
+                        <li class="dropdown">
+                            <a href="./catalog/" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Hesabım <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a asp-action="MyOrders" asp-controller="Account">Siparişlerim</a></li>
+                                <li><a asp-action="MyWishList" asp-controller="Account">Favorilerim</a></li>
+                                <li><a asp-action="MyCoupons" asp-controller="Account">Kuponlarım</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a asp-action="MyProfile" asp-controller="Account">Profilim</a></li>
+                                <li><a asp-action="MyAddresses" asp-controller="Account">Adreslerim</a></li>
+                                <li><a href="@Url.Action("LogOut", "Home")">Çıkış</a></li>
+                            </ul>
+                        </li>
+                        
                     }
                 </ul>
             </div><!--/.nav-collapse -->

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Shoper.BusinessLogic.Interface;
+using Shoper.Entities;
 
 namespace Shoper.Management.Controllers
 {
@@ -41,6 +42,7 @@ namespace Shoper.Management.Controllers
             var order = _orderService.Get(id);
             order.isActive = false;
             order.isVerified = false;
+            order.Status = OrderStatus.Cancelled;
             var products = _orderDetailService.GetExp(x => x.OrderId == order.OrderId);
             foreach (var product in products)
             {
@@ -48,7 +50,6 @@ namespace Shoper.Management.Controllers
                     canceledProduct.ProductStock += product.quantity;
                 _productService.Update(canceledProduct);
             }
-
             var result=_orderService.Update(order);
             return result != null ? true : false;
         }

@@ -1,0 +1,134 @@
+﻿@using Shoper.Entities
+@model IEnumerable<Order>
+@{
+    ViewData["Title"] = "MyOrders";
+}
+
+<div class="container">
+    <div class="row">
+        <!-- Filter -->
+        <div class="col-sm-3 filter">
+            <div class="item">
+                <div class="controls">
+                    <div class="checkbox-group" data-status="inactive">
+                        <a data-url="MyOrders" asp-action="MyOrders" class="btn btn-danger">Siparişlerim</a>
+                    </div>
+                    <br />
+                    <div class="checkbox-group" data-status="active">
+                        <a data-url="MyWishList" asp-action="MyWishList" class="btn btn-danger">Favorilerim</a>
+                    </div>
+                    <br />
+                    <div class="checkbox-group" data-status="inactive">
+                        <a data-url="MyCoupons" asp-action="MyCoupons" class="btn btn-danger">Kuponlarım</a>
+                    </div>
+                    <br />
+
+                    <div class="checkbox-group" data-status="inactive">
+                        <a data-url="MyProfile" asp-action="MyProfile" class="btn btn-danger">Profilim</a>
+                    </div>
+                    <br />
+                    <div class="checkbox-group" data-status="inactive">
+                        <a data-url="MyAddresses" asp-action="MyAddresses" class="btn btn-danger">Adreslerim</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-9">
+            <div class="row">
+                <h3>Siparişlerim</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.OrderId)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.OrderDate)
+                            </th>
+                         
+                            <th>
+                               Adres
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.TotalAmount)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Status)
+                            </th>
+                          
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr id="@item.OrderId" class="@(item.isVerified==true?"bg-success":item.isVerified==false && item.isActive==true?"bg-warning":"text-white bg-dark")">
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.OrderId)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.OrderDate)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Adres1)
+                                    <br> @Html.DisplayFor(modelItem => item.Adres2)
+                                    <br> @Html.DisplayFor(modelItem => item.City)
+                                </td>
+                                 <td>
+                                    @Html.DisplayFor(modelItem => item.TotalAmount)
+                                </td>
+                               
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Status)
+                                </td>
+                               
+                                <td>
+                                    @if (item.isActive)
+                                    {
+                                        @Html.ActionLink("Detay", "OrderDetail", new {  id=item.OrderId  },new{@class="btn btn-warning"})
+                                        if (item.isVerified)                                        
+                                        {
+                                            <a class="btn btn-danger text-white" href="javascript:void(0);" data-id="@item.OrderId" id="sil">İade</a>
+                                        }
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var loc = window.location.pathname;
+        var url = loc.split("/");
+        var actionName=url[2];
+        //(actionName);
+        $('div.checkbox-group').each(function (k, v) {
+            if ($(this).find("a").attr("data-url") == actionName) {
+                $(this).find("a").removeClass("btn-danger");
+                $(this).find("a").addClass("btn-success");
+            }
+        });
+       
+
+    });
+    $(document).on('click', '#sil', function () {
+        var response = confirm('Bu sipariş iptal edilecektir.Emin misiniz?');
+        var id = $(this).attr("data-id");
+        if (response == true) {
+            $.ajax({
+                url: "@Url.Action("CancelOrder")",
+                data: { id: id },
+                type: "POST",
+                success: function (data) {
+                    $("tr#" + id).addClass("text-white bg-dark");
+                }
+            });
+        }
+    });
+</script>

@@ -429,7 +429,7 @@ namespace Shoper.UI.Controllers
                 throw;
             }
            
-            return View();
+            return RedirectToAction("MyOrders","Account");
         }
         #endregion
 

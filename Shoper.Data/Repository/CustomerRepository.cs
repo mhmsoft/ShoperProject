@@ -54,7 +54,11 @@ namespace Shoper.Data.Repository
         {
             using (var context = new ShoperContext())
             {
-                var result = context.Customers.Include(x => x.Addresses).Where(predicate).ToList();
+                var result = context.Customers
+                        .Include(x => x.Addresses)
+                        .Include(x=>x.Orders)
+                        .ThenInclude(y=>y.OrderDetail)
+                        .Where(predicate).ToList();
                 return result;
             }
         }

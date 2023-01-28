@@ -1,0 +1,57 @@
+﻿
+@{
+    ViewData["Title"] = "MyCoupons";
+}
+
+<div class="container">
+    <div class="row">
+        <!-- Filter -->
+        <div class="col-sm-3 filter">
+            <div class="item">
+                <div class="controls">
+                    <div class="checkbox-group" data-status="inactive">
+                        <a data-url="MyOrders" asp-action="MyOrders" class="btn btn-danger">Siparişlerim</a>
+                    </div>
+                    <br />
+                    <div class="checkbox-group" data-status="active">
+                        <a data-url="MyWishList" asp-action="MyWishList" class="btn btn-danger">Favorilerim</a>
+                    </div>
+                    <br />
+                    <div class="checkbox-group" data-status="inactive">
+                        <a data-url="MyCoupons" asp-action="MyCoupons" class="btn btn-danger">Kuponlarım</a>
+                    </div>
+                    <br />
+
+                    <div class="checkbox-group" data-status="inactive">
+                        <a data-url="MyProfile" asp-action="MyProfile" class="btn btn-danger">Profilim</a>
+                    </div>
+                    <br />
+                    <div class="checkbox-group" data-status="inactive">
+                        <a data-url="MyAddresses" asp-action="MyAddresses" class="btn btn-danger">Adreslerim</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-9">
+            <div class="row">
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var loc = window.location.pathname;
+        var url = loc.split("/");
+        var actionName = url[2];
+        //(actionName);
+        $('div.checkbox-group').each(function (k, v) {
+            if ($(this).find("a").attr("data-url") == actionName) {
+                $(this).find("a").removeClass("btn-danger");
+                $(this).find("a").addClass("btn-success");
+            }
+        });
+
+
+    });
+</script>
