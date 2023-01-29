@@ -1,8 +1,10 @@
 ﻿
+@using Shoper.BusinessLogic.Interface
 @using Shoper.Entities
 @using System.Text.Json
 @using Shoper.UI.Models.ViewModels
 @inject IHttpContextAccessor Accessor
+@inject ICouponService _couponService
 
 @model Customer
 @{
@@ -222,7 +224,7 @@
                             </div>
                             <div class="col-xs-6">
                                 <p><b>₺@card.Sum(x=>x.quantity*x.product.ProductPrice.FirstOrDefault(y=>y.isValidFlag==true).Price)</b></p>
-                                <p><b>0</b></p>
+                                <p><b id="txtCouponPrice">0</b></p>
                                 <p><b>0</b></p>
                                 <p><b>₺@card.Sum(x=>x.quantity*x.product.ProductPrice.FirstOrDefault(y=>y.isValidFlag==true).Price*0.18m)</b></p>
                             </div>
@@ -238,11 +240,14 @@
                             <hr class="offset-xs">
 
                             <div class="input-group">
-                                <input type="text" class="form-control input-sm" placeholder="Kod">
+                                <input type="text" id="CouponCode" class="form-control input-sm" placeholder="Kod">
                                 <span class="input-group-btn">
-                                    <button class="btn btn-primary btn-sm" type="button">Apply</button>
+                                    <button id="btnApplyCoupon" class="btn btn-primary btn-sm" type="button">Uygula</button>
                                 </span>
                             </div><!-- /input-group -->
+                            <div class="row">
+                                <label id="couponDesc"></label>
+                            </div>
                             <hr class="offset-sm">
                         </div>
                         <div class="radio">
@@ -251,17 +256,20 @@
                                 Kupon
                             </label>
                         </div>
+                        
                     </div>
                     <hr>
 
                     <div class="container-fluid">
 
                         <div class="row">
+
+                            
                             <div class="col-xs-6">
                                 <h3 class="no-margin">Toplam Tutar</h3>
                             </div>
                             <div class="col-xs-6">
-                                <h3 class="no-margin">₺@card.Sum(x=>x.quantity*x.product.ProductPrice.FirstOrDefault(y=>y.isValidFlag==true).Price*1.18m)</h3>
+                                <h3 id="txtTotal" class="no-margin">₺@card.Sum(x=>x.quantity*x.product.ProductPrice.FirstOrDefault(y=>y.isValidFlag==true).Price*1.18m)</h3>
                                 <input type="hidden" name="amount" id="amount" value="@card.Sum(x=>x.quantity*x.product.ProductPrice.FirstOrDefault(y=>y.isValidFlag==true).Price*1.18m)" />
                             </div>
                         </div>
@@ -283,6 +291,36 @@
             var selectedAddressId=$("address[data-style=selected]").find("input").val();           
             $("#formCheckout").find("#selectedAddress").val(selectedAddressId);
             $("#formCheckout").submit();
+        });
+
+        $(document).on('click', '#btnApplyCoupon', function () {
+            var response = confirm('Kupon indirimi uygulanacaktır.');
+            var code = $("#CouponCode").val();
+            if (response == true) {
+                $.ajax({
+                    url: "@Url.Action("ApplyCoupon")",
+                    data: { code: code },
+                    type: "POST",
+                    success: function (data) {
+                        if(data>0){
+                            $(".container-fluid .row .col-xs-6").find("#txtCouponPrice").text("₺" + data);
+                            $(".container-fluid .row .col-xs-6").find("p b#CouponAmount").val(data);
+                            var total = $("#amount").val();
+                            
+                            total=parseFloat(total)-parseFloat(data);
+                          
+                            $(".container-fluid .row .col-xs-6").find("#txtTotal").text("₺" + total);
+                            $("#amount").val(total);
+                            $("label#couponDesc").text("İndirim uygulandı");
+                            $("label#couponDesc").addClass("bg-success")                           
+                        }else{
+                            $("label#couponDesc").text("İndirim uygulanamadı");
+                            $("label#couponDesc").addClass("bg-danger")
+                        }
+                        
+                    }
+                });
+            }
         });
     });
   

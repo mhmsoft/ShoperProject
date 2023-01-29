@@ -1,4 +1,5 @@
-﻿
+﻿@using Shoper.Entities
+@model IEnumerable<Coupon>
 @{
     ViewData["Title"] = "MyCoupons";
 }
@@ -35,6 +36,58 @@
         </div>
         <div class="col-sm-9">
             <div class="row">
+                <h3>Kuponlarım</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.couponId)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.CouponCode)
+                            </th>
+                           
+                            <th>
+                                @Html.DisplayNameFor(model => model.CouponPrice)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.expired)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.isValid)
+                            </th>
+
+                           
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr id="@item.couponId" class="@(item.isValid==true?"bg-success":"bg-danger")">
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.couponId)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.CouponCode)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.CouponPrice)
+                                    
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.expired)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.isValid)
+                                </td>
+
+                                
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

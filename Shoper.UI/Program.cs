@@ -31,7 +31,8 @@ builder.Services.AddScoped<IAddressRepository, AddressRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
 builder.Services.AddScoped<ISliderRepository, SliderRepository>();
-
+builder.Services.AddScoped<IWishListRepository, WishListRepository>();
+builder.Services.AddScoped<ICouponRepository, CouponRepository>();
 
 
 builder.Services.AddScoped<IManifactureService, ManifactureService>();
@@ -48,7 +49,8 @@ builder.Services.AddScoped<IAddressService, AddressService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IOrderDetailService, OrderDetailService>();
 builder.Services.AddScoped<ISliderService, SliderService>();
-
+builder.Services.AddScoped<IWishListService, WishListService>();
+builder.Services.AddScoped<ICouponService, CouponService>();
 
 builder.Services.AddDbContext<ShoperContext>();
 builder.Services.AddIdentity<AppUser, IdentityRole>(options =>

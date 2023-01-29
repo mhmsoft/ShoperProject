@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using MimeKit.Encodings;
+using Org.BouncyCastle.Math.EC.Rfc7748;
 using Shoper.Entities;
+using System.Data;
 using System.Net.Mail;
 
 namespace Shoper.Data
@@ -27,7 +30,8 @@ namespace Shoper.Data
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<Slider> Sliders { get; set; }
-
+        public DbSet<WishList> WishLists { get; set; }
+        public DbSet<Coupon> Coupons { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -54,10 +58,12 @@ namespace Shoper.Data
             modelBuilder.Entity<Order>().ToTable("Order").HasKey(a => a.OrderId);
             modelBuilder.Entity<OrderDetail>().ToTable("OrderDetail").HasKey(a => a.OrderDetailId);
             modelBuilder.Entity<Slider>().ToTable("Slider").HasKey(a => a.sliderId);
+            modelBuilder.Entity<WishList>().ToTable("WishList").HasKey(a => a.wishListId);
+            modelBuilder.Entity<Coupon>().ToTable("Coupon").HasKey(a => a.couponId);
 
             modelBuilder.Entity<ProductItemValue>().Property(d => d.ItemValueId).UseIdentityColumn(1,1);
             modelBuilder.Entity<Order>().Property(d => d.OrderId).UseIdentityColumn(100, 1);
-
+            modelBuilder.Entity<ProductPrice>().Property(d => d.Price).HasPrecision(8,2);
             // Relations
             //category-product
             modelBuilder.Entity<Manifacture>()
@@ -150,7 +156,25 @@ namespace Shoper.Data
                .HasOne<Category>(x => x.Category)
                .WithMany(y => y.Slider)
                .HasForeignKey(t => t.categoryId)
-               .HasConstraintName("Fk_SliderToCategory"); ;
+               .HasConstraintName("Fk_SliderToCategory"); 
+
+            modelBuilder.Entity<Coupon>()
+                .HasOne<Customer>(x => x.Customer)
+                .WithMany(x => x.Coupons)
+                .HasForeignKey(x => x.customerId)
+                .HasConstraintName("Fk_CouponsToCustomer");
+
+            modelBuilder.Entity<WishList>()
+                .HasOne<Customer>(x=>x.Customer)
+                .WithMany(x=>x.WishLists)
+                .HasForeignKey(x => x.customerId)
+                .HasConstraintName("Fk_WishListsToCustomer");
+
+            modelBuilder.Entity<WishList>()
+                .HasOne<Product>(x => x.product)
+                .WithMany(x => x.WishLists)
+                .HasForeignKey(x => x.productId)
+                .HasConstraintName("Fk_WishListsToProduct");
 
             base.OnModelCreating(modelBuilder);// identity tablolarını oluşturmak için
         }

@@ -94,12 +94,12 @@
 
                     foreach (var manifacture in Manifactures )
                     {
-                            <div class="checkbox-group" data-status="inactive">
-                                <div class="checkbox"><i class="ion-android-done"></i></div>
-                                <div class="label" data-value="Hp">@manifacture.ManifactureName</div>
-                                <input type="checkbox" name="manifacture" id="manifacture" value="@manifacture.ManifactureId">
-                            
-                                </div>
+                                    <div class="checkbox-group" data-status="inactive">
+                                        <div class="checkbox"><i class="ion-android-done"></i></div>
+                                        <div class="label" data-value="Hp">@manifacture.ManifactureName</div>
+                                        <input type="checkbox" name="manifacture" id="manifacture" value="@manifacture.ManifactureId">
+                                    
+                                        </div>
                     }
                 }
 
@@ -186,7 +186,7 @@
         @foreach (var product in Model)
         {
             <div class="col-sm-6 col-md-4 product">
-                <a href="#favorites" class="favorites" data-favorite="inactive"><i class="ion-ios-heart-outline"></i></a>
+                <a href="javascript:void(0);" data-id="@product.ProductId" class="favorites" data-favorite="inactive"><i class="ion-ios-heart-outline"></i></a>
                 <a asp-action="ProductDetail" asp-route-id="@product.ProductId">
                     <img src="@(product.ProductImage!=null? "data:image/png;base64,"+Convert.ToBase64String(product.ProductImage.FirstOrDefault().Image):"~/images/no-image.png")" alt="@product.ProductName" />
                 </a>
@@ -238,7 +238,23 @@
         $("#btnFilterPrice").click(function () {
             $("#FormFilterPrice").submit();
         });
-            
+        $(document).on('click', '.favorites', function () {
+            var response = confirm('Bu ürün favori listenize eklenecektir.Emin misiniz?');
+            var id = $(this).attr("data-id");
+            if (response == true) {
+                $.ajax({
+                    url: "@Url.Action("AddWishList","Account")",
+                    data: { productId: id },
+                    type: "POST",
+                    success: function (data) {
+                        if(data){
+                            alert("listenize eklendi");
+                        }
+                    }
+                });
+            }
+        });
+        
         
     });
 </script>

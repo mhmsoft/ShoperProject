@@ -29,6 +29,7 @@ namespace Shoper.Entities
         public virtual ICollection<ProductComment> ProductComment { get; set; }
         public virtual ICollection<ProductItemValue> ProductItemValue { get; set; }
         public virtual ICollection<OrderDetail> OrderDetail { get; set; }
+        public virtual ICollection<WishList> WishLists { get; set; }
     }
 
 }

@@ -27,6 +27,7 @@ namespace Shoper.UI.Controllers
         private readonly IOrderService _orderService;
         private readonly IAddressService _addressService;
         private readonly IOrderDetailService _orderDetailService;
+        private readonly ICouponService _couponService;
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IMailSender _mailSender;
@@ -36,6 +37,7 @@ namespace Shoper.UI.Controllers
                                 IAddressService addressService,
                                 IOrderDetailService orderDetailService,
                                 IProductCommentService productCommentService,
+                                ICouponService couponService,
                                 UserManager<AppUser> userManager,
                                 SignInManager<AppUser> signInManager,
                                 IMailSender mailSender)
@@ -49,6 +51,7 @@ namespace Shoper.UI.Controllers
             _userManager= userManager;
             _signInManager= signInManager;
             _mailSender= mailSender;
+            _couponService = couponService;
         }        
 
         [HttpGet]
@@ -219,7 +222,39 @@ namespace Shoper.UI.Controllers
         #endregion
 
         #region Checkout
-       
+        [HttpPost]
+        public string CreateCouponCode()
+        {
+            string[] data = new string[] { "a", "b", "c", "ç", "d", "e", "f", "g", "ğ", "h", ",", "ı", "j", "k", "l", "m", "n", "o", "ö", "p", "q", "r", "s", "ş", "t", "u", "ü", "v", "w", "x", "y", "z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+            Random rnd= new Random();
+            string coupon = "";
+            for (int i = 0; i < 6; i++)
+            {
+                coupon+= data[rnd.Next(1,data.Length)].ToUpper();
+            }
+            return coupon;
+        }
+        [HttpPost]
+        public decimal ApplyCoupon(string code)
+        {
+            if (_signInManager.IsSignedIn(User))
+            {
+                if (_couponService.GetExp(x => x.CouponCode == code).Any(x => x.isValid == true && DateTime.Now < x.expired))
+                {
+                    // indirim kuponu kullanılmış olduğunu belirtiyoruz
+                    _couponService.GetExp(x => x.CouponCode == code).FirstOrDefault().isValid = false;
+                    return _couponService.GetExp(x => x.CouponCode == code).FirstOrDefault().CouponPrice;
+
+                }
+                else
+
+                    return 0;
+
+            }
+            return 0;
+            
+        }
+
         public async Task<IActionResult> Checkout()
         {
             if(_signInManager.IsSignedIn(User))
@@ -247,7 +282,23 @@ namespace Shoper.UI.Controllers
                     Email = User.Identity.Name;
                     var user = await _userManager.FindByEmailAsync(Email);
                     Customer customer = _customerService.GetExp(x => x.UserId == user.Id).FirstOrDefault();
-
+                    string categoryCodeForCoupon = "";
+                    decimal CouponDiscountPrice = 0;
+                    // alışveriş tutarı 15 bin üzerinde ise kupon tanımla
+                    if (Decimal.Parse(amount) > 15000)
+                    {
+                        CouponDiscountPrice = 50;
+                        if (Decimal.Parse(amount) < 100000)
+                            CouponDiscountPrice = 1000;
+                        else if (Decimal.Parse(amount) < 80000)
+                            CouponDiscountPrice = 800;
+                        else if (Decimal.Parse(amount) < 50000)
+                            CouponDiscountPrice = 500;
+                        else if (Decimal.Parse(amount) < 30000)
+                            CouponDiscountPrice = 250;
+                        else if (Decimal.Parse(amount) < 20000)
+                            CouponDiscountPrice = 100;
+                    }
 
                     if (!string.IsNullOrEmpty(selectedAddress)) // mevcut bir adres seçmişse
                     {
@@ -268,6 +319,8 @@ namespace Shoper.UI.Controllers
                         order.isActive = true;
                         order.isVerified = false;
                         var result = _orderService.Add(order); // sipariş kaydedildi
+
+                        
                         foreach (var item in card)
                         {
                             // stock kontrolü
@@ -286,12 +339,25 @@ namespace Shoper.UI.Controllers
                                     ProductId = item.product.ProductId,
                                     quantity = item.quantity
                                 };
+                                categoryCodeForCoupon += item.product.CategoryId + "-";
                                 var OrderedProduct = _productService.Get(item.product.ProductId);
                                 OrderedProduct.ProductStock -= item.quantity;
                                 _productService.Update(OrderedProduct);
                                 _orderDetailService.Add(orderDetail);
                             }
                         }
+                            Coupon newCoupon = new Coupon()
+                            {
+                                CouponCode = CreateCouponCode(),
+                                category = categoryCodeForCoupon,
+                                CouponPrice = CouponDiscountPrice,
+                                created = DateTime.Now,
+                                expired = DateTime.Now.AddDays(10), // 10 gün sonra süresi dolacak
+                                isValid = true,
+                                customerId = customer.CustomerId
+                            };
+                            _couponService.Add(newCoupon);
+                        
                     }
                     else // yeni bir adres girmişse
                     {
@@ -347,7 +413,25 @@ namespace Shoper.UI.Controllers
                             }
                            
                         }
+                        Coupon newCoupon = new Coupon()
+                        {
+                            CouponCode = CreateCouponCode(),
+                            category = categoryCodeForCoupon,
+                            CouponPrice = CouponDiscountPrice,
+                            created = DateTime.Now,
+                            expired = DateTime.Now.AddDays(10), // 10 gün sonra süresi dolacak
+                            isValid = true,
+                            customerId = customer.CustomerId
+                        };
+                        _couponService.Add(newCoupon);
                     }
+                    // kupon maili gönderilecek
+                    await _mailSender.MailSend(new Email()
+                    {
+                        Subject = $"Siparişiniz için bir kupon kazandınız",
+                        Body = $"Tebrikler.Siparişinizi aldık. {CouponDiscountPrice} TL değerindeki indirim kuponunuzun son geçerlilik tarihi ise {DateTime.Now.AddDays(10)}. İyi günler dileriz",
+                        To = InternetAddress.Parse(Email)
+                    });
                 }
                 else // login olmayan müşteri
                 {
@@ -420,6 +504,8 @@ namespace Shoper.UI.Controllers
                     Body = $"Siparişinizi aldık.",
                     To = InternetAddress.Parse(Email)
                 });
+
+               
                 HttpContext.Session.Remove("Card"); // sepet Session siliniyor
 
             }
@@ -432,6 +518,7 @@ namespace Shoper.UI.Controllers
             return RedirectToAction("MyOrders","Account");
         }
         #endregion
+
 
     }
 }

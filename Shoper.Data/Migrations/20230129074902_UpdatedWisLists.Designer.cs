@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Shoper.Data;
 
@@ -11,9 +12,11 @@ using Shoper.Data;
 namespace Shoper.Data.Migrations
 {
     [DbContext(typeof(ShoperContext))]
-    partial class ShoperContextModelSnapshot : ModelSnapshot
+    [Migration("20230129074902_UpdatedWisLists")]
+    partial class UpdatedWisLists
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -290,9 +293,6 @@ namespace Shoper.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("CouponPrice")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<string>("category")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -305,9 +305,6 @@ namespace Shoper.Data.Migrations
 
                     b.Property<DateTime>("expired")
                         .HasColumnType("datetime2");
-
-                    b.Property<bool>("isValid")
-                        .HasColumnType("bit");
 
                     b.HasKey("couponId");
 

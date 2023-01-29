@@ -30,5 +30,7 @@ namespace Shoper.Entities
         public ICollection<Address> Addresses { get; set; }
         public ICollection<Order> Orders { get; set; }
         public  AppUser User { get; set; }
+        public ICollection<WishList> WishLists { get; set; }
+        public ICollection<Coupon> Coupons { get; set; }
     }
 }
