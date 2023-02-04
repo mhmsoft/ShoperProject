@@ -36,13 +36,12 @@ namespace Shoper.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-           // optionsBuilder.UseSqlServer(@"Server=DESKTOP-LRL95PE\SQLEXPRESS;Database=ShoperDb;Trusted_Connection=True;TrustServerCertificate=True");
+            optionsBuilder.UseSqlServer(@"Server=DESKTOP-LRL95PE\SQLEXPRESS;Database=ShoperDb;Trusted_Connection=True;TrustServerCertificate=True");
             
-            optionsBuilder.UseSqlServer(@"Server=DESKTOP-A6PJE9T\SQLEXPRESS;Database=ShoperDb;Trusted_Connection=True;TrustServerCertificate=True");
+            //optionsBuilder.UseSqlServer(@"Server=DESKTOP-A6PJE9T\SQLEXPRESS;Database=ShoperDb;Trusted_Connection=True;TrustServerCertificate=True");
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
             // Tablo ismi ve tabloya ait primary key verilir.
             modelBuilder.Entity<Manifacture>().ToTable("Manifacture").HasKey(c => c.ManifactureId);
             modelBuilder.Entity<Category>().ToTable("Category").HasKey(c=>c.CategoryId);

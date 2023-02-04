@@ -11,6 +11,7 @@ namespace Shoper.UI.Controllers
     public class AccountController : Controller
     {
         private readonly ICustomerService _customerService;
+        private readonly IAddressService _addressService;
         private readonly IOrderService _orderService;
         private readonly ICouponService _couponService;
         private readonly IOrderDetailService _orderDetailService;
@@ -25,7 +26,8 @@ namespace Shoper.UI.Controllers
                                  ICouponService couponService,
                                  IProductService productService,
                                  SignInManager<AppUser> signInManager,
-                                 IWishListService wishListService)
+                                 IWishListService wishListService,
+                                 IAddressService addressService)
         {
             _orderService = orderService;
             _customerService = customerService;
@@ -35,6 +37,7 @@ namespace Shoper.UI.Controllers
             _productService = productService;
             _wishListService = wishListService;
             _couponService = couponService;
+            _addressService = addressService;
         }
         public IActionResult Index()
         {
@@ -80,11 +83,53 @@ namespace Shoper.UI.Controllers
         }
         public IActionResult MyAddresses()
         {
-            return View();
+            var addresses= _customerService.GetExp(x => x.Email == User.Identity.Name).FirstOrDefault().Addresses.ToList();
+            return View(addresses);
         }
-        public IActionResult MyProfile()
+        public IActionResult NewAddress()
         {
             return View();
+        }
+        [HttpPost]
+        public IActionResult NewAddress(Address model)
+        {
+            var customerId = _customerService.GetExp(x => x.Email == User.Identity.Name).FirstOrDefault().CustomerId;
+            model.CustomerId = customerId;
+            _addressService.Add(model);
+            return RedirectToAction("MyAddresses");
+        }
+
+        public IActionResult editAddress(int AddressId)
+        {
+            var address = _addressService.Get(AddressId);
+            return View(address);
+        }
+        [HttpPost]
+        public IActionResult editAddress(Address model)
+        {
+
+            var customerId = _customerService.GetExp(x => x.Email == User.Identity.Name).FirstOrDefault().CustomerId;
+            model.CustomerId = customerId;
+            _addressService.Update(model);
+            return RedirectToAction("MyAddresses");
+        }
+        [HttpPost]
+        public bool deleteAddress(int id)
+        {
+            var address = _addressService.Get(id);
+            return _addressService.Delete(address)!=null;
+        }
+
+        public IActionResult MyProfile()
+        {
+            var customer = _customerService.GetExp(x => x.Email == User.Identity.Name).FirstOrDefault();
+            return View(customer);
+        }
+        [HttpPost]
+        public IActionResult MyProfile(Customer model)
+        {
+            var result=_customerService.Update(model);
+            return View(result);
         }
         [HttpPost]
         public bool CancelOrder(int id)  //iade
