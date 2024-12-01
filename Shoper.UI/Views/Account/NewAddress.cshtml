@@ -1,5 +1,12 @@
-﻿@using Shoper.Entities
-@model IEnumerable<Address>
+﻿
+@{
+    ViewData["Title"] = "NewAddress";
+}
+
+<h2>NewAddress</h2>
+
+@using Shoper.Entities
+@model Address
 @{
     ViewData["Title"] = "MyAddresses";
 }
@@ -36,24 +43,21 @@
         <!--Righ menu-->
         <div class="col-sm-9">
             <div class="row">
-                <a asp-action="NewAddress" class="btn btn-outline-secondary">Yeni Adres</a>
-                <br />
-               @foreach (var address in Model)
-                {
-                   <div class="col-md-6">
-                    <div class="card" id="@address.AddressId">
-                        <h5 class="card-header">@address.AddressTitle</h5>
+                <form asp-action="newAddress" method="post">
+                    <div class="card">
+                        <h5 class="card-header"><input type="text" asp-for="@Model.AddressTitle" placeholder="Addres adı" /></h5>
                         <div class="card-body">
-                            <h5 class="card-title">@address.City</h5>
-                            <p class="card-text">@address.Address1</p>
-                             <p class="card-text">@address.Address2</p>
-                            <a asp-action="EditAddress" asp-route-addressId="@address.AddressId" class="btn btn-primary">Düzenle</a>
-                            <a id="sil" data-id="@address.AddressId" class="btn btn-danger">Sil</a>
+                            <h5 class="card-title"><input class="form-group" type="text" asp-for="@Model.City" placeholder="Şehir" /></h5>
+                            <p class="card-text"><input type="text" asp-for="@Model.Address1"  placeholder="Adres" /></p>
+                            <p class="card-text"><input type="text" asp-for="@Model.Address2"  placeholder=" Adres"/></p>
+                            <input type="submit" class="btn btn-primary" value="Kaydet"/>
+                            
                         </div>
                     </div>
-                    </div>
-                }
+                </form>
                 
+                
+
             </div>
         </div>
     </div>
@@ -63,7 +67,7 @@
         var loc = window.location.pathname;
         var url = loc.split("/");
         var actionName = url[2];
-      
+
         $('div.checkbox-group').each(function (k, v) {
             if ($(this).find("a").attr("data-url") == actionName) {
                 $(this).find("a").removeClass("btn-danger");
@@ -73,18 +77,5 @@
 
 
     });
-    $(document).on('click', '#sil', function () {
-        var response = confirm('Bu adres silinecektir.Emin misiniz?');
-        var id = $(this).attr("data-id");
-        if (response == true) {
-            $.ajax({
-                url: "@Url.Action("deleteAddress")",
-                data: { id: id },
-                type: "POST",
-                success: function (data) {
-                    $("div#" + id).remove();
-                }
-            });
-        }
-         });
+  
 </script>

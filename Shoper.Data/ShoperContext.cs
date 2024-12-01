@@ -49,7 +49,6 @@ namespace Shoper.Data
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
             // Tablo ismi ve tabloya ait primary key verilir.
             modelBuilder.Entity<Manifacture>().ToTable("Manifacture").HasKey(c => c.ManifactureId);
             modelBuilder.Entity<Category>().ToTable("Category").HasKey(c=>c.CategoryId);

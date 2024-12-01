@@ -71,14 +71,14 @@
                                     }
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.product.ProductName)
+                                    <a asp-action="ProductDetail" asp-controller="Catalog" asp-route-Id="@item.productId"> item.product.ProductName</a>
                                 </td>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.product.ProductPrice.FirstOrDefault(x=>x.isValidFlag==true).Price)
                                 </td>
 
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.added)
+                                    @item.added- DateTime.UtcNow).Value.Humanize()
                                 </td>
 
                                
