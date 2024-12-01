@@ -173,6 +173,8 @@ namespace Shoper.UI.Controllers
                         {
                             Email = user.Email,
                             FirstName = user.fullName,
+                            LastName="",
+                            Phone=user.PhoneNumber,
                             UserId = user.Id
                         };
                         _customerService.Add(customer);

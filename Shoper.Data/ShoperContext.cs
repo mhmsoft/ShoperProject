@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using MimeKit.Encodings;
@@ -10,7 +11,7 @@ using System.Net.Mail;
 namespace Shoper.Data
 {
     
-    public class ShoperContext : IdentityDbContext<AppUser>
+    public class ShoperContext : IdentityDbContext<AppUser>,IDataProtectionKeyContext
     {
         public ShoperContext()
         {
@@ -32,13 +33,19 @@ namespace Shoper.Data
         public DbSet<Slider> Sliders { get; set; }
         public DbSet<WishList> WishLists { get; set; }
         public DbSet<Coupon> Coupons { get; set; }
-
+        public DbSet<DataProtectionKey> DataProtectionKeys { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            //home-windows
            // optionsBuilder.UseSqlServer(@"Server=DESKTOP-LRL95PE\SQLEXPRESS;Database=ShoperDb;Trusted_Connection=True;TrustServerCertificate=True");
+            //docker home Mac
+            //optionsBuilder.UseSqlServer(@"Server=localhost,1433;Database=ShoperDb;User Id=SA;Password=Mhmsoft123;MultipleActiveResultSets=true;TrustServerCertificate=true");
+
+             optionsBuilder.UseSqlServer(@"Server=sqldata,1433;Database=ShoperDb;User=sa;Password=Mhmsoft123;MultipleActiveResultSets=true;TrustServerCertificate=True",options=>options.EnableRetryOnFailure(maxRetryCount: 10, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null));
             
-            optionsBuilder.UseSqlServer(@"Server=DESKTOP-A6PJE9T\SQLEXPRESS;Database=ShoperDb;Trusted_Connection=True;TrustServerCertificate=True");
+            // course
+           // optionsBuilder.UseSqlServer(@"Server=DESKTOP-A6PJE9T\SQLEXPRESS;Database=ShoperDb;Trusted_Connection=True;TrustServerCertificate=True");
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -175,6 +182,33 @@ namespace Shoper.Data
                 .WithMany(x => x.WishLists)
                 .HasForeignKey(x => x.productId)
                 .HasConstraintName("Fk_WishListsToProduct");
+
+            // SEED DATA
+             modelBuilder.Entity<IdentityRole>().HasData(new IdentityRole {Id = "2c5e174e-3b0e-446f-86af-483d56fd7210", Name = "Manager", NormalizedName = "MANAGER".ToUpper() });
+             modelBuilder.Entity<IdentityRole>().HasData(new IdentityRole {Id = "4dfsdfsd-3b0e-446f-86af-483d56fd7211", Name = "Customer", NormalizedName = "CUSTOMER".ToUpper() });
+             
+             var hasher = new PasswordHasher<IdentityUser>();
+            //Seeding the User to AspNetUsers table
+            modelBuilder.Entity<AppUser>().HasData(
+                new AppUser
+                {
+                    Id = "8e445865-a24d-4543-a6c6-9443d048cdb9", // primary key
+                    UserName = "dibutra",
+                    fullName=   "Dibutra",
+                    Email = "dibutra@gmail.com",
+                    NormalizedUserName = "DIBUTRA",
+                    EmailConfirmed=true,
+                    PasswordHash = hasher.HashPassword(null, "Test.123")
+                }
+            );
+            //Seeding the relation between our user and role to AspNetUserRoles table
+            modelBuilder.Entity<IdentityUserRole<string>>().HasData(
+                new IdentityUserRole<string>
+                {
+                    RoleId = "2c5e174e-3b0e-446f-86af-483d56fd7210", 
+                    UserId = "8e445865-a24d-4543-a6c6-9443d048cdb9"
+                }
+            );
 
             base.OnModelCreating(modelBuilder);// identity tablolarını oluşturmak için
         }

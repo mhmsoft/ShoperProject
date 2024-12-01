@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using AspNetCoreGeneratedDocument;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.FileProviders;
 using Shoper.BusinessLogic.Interface;
 using Shoper.BusinessLogic.Service;
@@ -99,7 +103,24 @@ builder.Services.ConfigureApplicationCookie(_ =>
 
 builder.Services.AddAuthentication();
 
-
+builder.Services.AddAntiforgery(options =>
+{
+    options.FormFieldName = "AntiforgeryFieldname";
+    options.HeaderName = "X-CSRF-TOKEN-HEADERNAME";
+    options.SuppressXFrameOptionsHeader = false;
+});
+builder.Services.AddDataProtection().PersistKeysToDbContext<ShoperContext>().UseCryptographicAlgorithms(
+        new Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel.AuthenticatedEncryptorConfiguration
+        {
+            EncryptionAlgorithm=Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.EncryptionAlgorithm.AES_192_CBC,
+            ValidationAlgorithm=Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ValidationAlgorithm.HMACSHA256
+        });
+builder.Services.AddAntiforgery(options =>
+{     // Set Cookie properties using CookieBuilder properties†.
+    
+    options.Cookie.Expiration = TimeSpan.Zero;
+    
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -109,22 +130,36 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+// https için
+app.UseHttpsRedirection();  
 
-app.UseHttpsRedirection();
 app.UseStaticFiles();
+/*
 app.UseStaticFiles(new StaticFileOptions()
 {
     FileProvider = new PhysicalFileProvider(
-               Path.Combine(Directory.GetCurrentDirectory(), @"./../Shoper.Management/wwwroot/images")),
+               Path.Combine(Directory.GetCurrentDirectory(), @"/Shoper.Management/wwwroot/images")),
     RequestPath = new PathString("/AdminImages")
 });
+*/
 app.UseSession();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseAntiforgery();
+//app.MapRazorComponents<shoperUI.>().DisableAntiforgery().AddInteractiveServerRenderMode();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+  
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ShoperContext>();
+    
+   
+    db.Database.Migrate();
+}
+
 
 app.Run();

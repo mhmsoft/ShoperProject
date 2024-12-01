@@ -17,10 +17,29 @@ namespace Shoper.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.0")
+                .HasAnnotation("ProductVersion", "8.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("Microsoft.AspNetCore.DataProtection.EntityFrameworkCore.DataProtectionKey", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("FriendlyName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Xml")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DataProtectionKeys");
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -47,6 +66,20 @@ namespace Shoper.Data.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "2c5e174e-3b0e-446f-86af-483d56fd7210",
+                            Name = "Manager",
+                            NormalizedName = "MANAGER"
+                        },
+                        new
+                        {
+                            Id = "4dfsdfsd-3b0e-446f-86af-483d56fd7211",
+                            Name = "Customer",
+                            NormalizedName = "CUSTOMER"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -134,6 +167,13 @@ namespace Shoper.Data.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "8e445865-a24d-4543-a6c6-9443d048cdb9",
+                            RoleId = "2c5e174e-3b0e-446f-86af-483d56fd7210"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -256,6 +296,24 @@ namespace Shoper.Data.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "8e445865-a24d-4543-a6c6-9443d048cdb9",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "42220a98-900d-4c69-acc9-b94fef2580ec",
+                            Email = "dibutra@gmail.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedUserName = "DIBUTRA",
+                            PasswordHash = "AQAAAAIAAYagAAAAENuLqYBJ0HWvFIV9fX4r4RunmKLMF+ZtUJSu4eTgr7jWD6tKahBrHpLaKn/nLmddfw==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "df79d27f-0cda-4131-940b-57fac5dcc480",
+                            TwoFactorEnabled = false,
+                            UserName = "dibutra",
+                            fullName = "Dibutra"
+                        });
                 });
 
             modelBuilder.Entity("Shoper.Entities.Category", b =>
@@ -341,13 +399,13 @@ namespace Shoper.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("CustomerId");
 
                     b.HasIndex("UserId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
 
                     b.ToTable("Customer", (string)null);
                 });
@@ -393,7 +451,6 @@ namespace Shoper.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("CustomerId")
-                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("OrderDate")
@@ -667,7 +724,6 @@ namespace Shoper.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("sliderId"));
 
                     b.Property<int?>("categoryId")
-                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<string>("desc")
@@ -794,9 +850,7 @@ namespace Shoper.Data.Migrations
                 {
                     b.HasOne("Shoper.Entities.AppUser", "User")
                         .WithOne("Customer")
-                        .HasForeignKey("Shoper.Entities.Customer", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("Shoper.Entities.Customer", "UserId");
 
                     b.Navigation("User");
                 });
@@ -806,8 +860,6 @@ namespace Shoper.Data.Migrations
                     b.HasOne("Shoper.Entities.Customer", "Customer")
                         .WithMany("Orders")
                         .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
                         .HasConstraintName("Fk_CustomerToOrder");
 
                     b.Navigation("Customer");
@@ -941,8 +993,6 @@ namespace Shoper.Data.Migrations
                     b.HasOne("Shoper.Entities.Category", "Category")
                         .WithMany("Slider")
                         .HasForeignKey("categoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
                         .HasConstraintName("Fk_SliderToCategory");
 
                     b.Navigation("Category");

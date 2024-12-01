@@ -1,0 +1,50 @@
+version: '3'
+services:
+    sqldata:        
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        
+        ports:
+          - 1434:1433
+        environment:
+            MSSQL_SA_PASSWORD: Mhmsoft123
+            ACCEPT_EULA: Y
+   
+    webui:
+          image: the_shoper_ui
+          build: 
+            context: Shoper.UI
+            dockerfile: Shoper.UI/Dockerfile
+          environment:
+            MSSQL_SA_PASSWORD: Mhmsoft123
+             - ASPNETCORE_ENVIRONMENT=Production
+             - ASPNETCORE_URLS=http://+:8080
+            
+          ports: 
+          - "5001:443"
+          - "501:8080"
+          depends_on:
+          - sqldata
+          
+
+           
+    webmanage:
+          image: the_shoper_management
+          build: 
+            context: Shoper.Management
+            dockerfile: Shoper.Management/Dockerfile
+          environment:
+            
+            MSSQL_SA_PASSWORD: Mhmsoft123
+             - ASPNETCORE_ENVIRONMENT=Production
+             - ASPNETCORE_URLS=http://+:8080
+            
+          ports: 
+          - "5000:443"
+          - "500:8080"
+          depends_on:
+          - sqldata
+      
+
+   
+    
+          

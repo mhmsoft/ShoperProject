@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Shoper.BusinessLogic.Interface;
 using Shoper.BusinessLogic.Service;
 using Shoper.BusinessLogic.Utility;
@@ -96,7 +98,24 @@ builder.Services.ConfigureApplicationCookie(_ =>
 });
 
 builder.Services.AddAuthentication();
-
+builder.Services.AddAntiforgery(options =>
+{
+    options.FormFieldName = "AntiforgeryFieldname";
+    options.HeaderName = "X-CSRF-TOKEN-HEADERNAME";
+    options.SuppressXFrameOptionsHeader = false;
+});
+builder.Services.AddDataProtection().PersistKeysToDbContext<ShoperContext>().UseCryptographicAlgorithms(
+        new Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel.AuthenticatedEncryptorConfiguration
+        {
+            EncryptionAlgorithm=Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.EncryptionAlgorithm.AES_192_CBC,
+            ValidationAlgorithm=Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ValidationAlgorithm.HMACSHA256
+        });
+builder.Services.AddAntiforgery(options =>
+{     // Set Cookie properties using CookieBuilder properties†.
+    
+    options.Cookie.Expiration = TimeSpan.Zero;
+    
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -107,7 +126,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 //https://github.com/mhmsoft/ShoperProject
-
+// https için
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
@@ -115,9 +134,16 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseAntiforgery();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ShoperContext>();
+   
+    db.Database.Migrate();
+}
 
 app.Run();
